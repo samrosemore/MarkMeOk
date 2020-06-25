@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bfs-bX-c4n">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--HomeActivity-->
+        <scene sceneID="vZ2-H6-2ky">
+            <objects>
+                <viewController storyboardIdentifier="HomeActivity" title="HomeActivity" useStoryboardIdentifierAsRestorationIdentifier="YES" id="jNa-ck-D57" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1IJ-4H-9ej">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jYw-eT-Rlw">
+                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <connections>
+                                    <segue destination="2Ix-I8-IXd" kind="embed" destinationCreationSelector="loadHomeScreen:" id="JS2-W5-lqB"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="jYw-eT-Rlw" firstAttribute="top" secondItem="t2B-Cf-KPh" secondAttribute="top" id="ABL-Ct-qBw"/>
+                            <constraint firstItem="t2B-Cf-KPh" firstAttribute="trailing" secondItem="jYw-eT-Rlw" secondAttribute="trailing" id="MKl-NF-gul"/>
+                            <constraint firstItem="jYw-eT-Rlw" firstAttribute="bottom" secondItem="t2B-Cf-KPh" secondAttribute="bottom" id="cG2-g1-6RU"/>
+                            <constraint firstItem="jYw-eT-Rlw" firstAttribute="leading" secondItem="t2B-Cf-KPh" secondAttribute="leading" id="sgu-kH-LUL"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="t2B-Cf-KPh"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Home" image="icons8-home-30" id="uRU-t8-Z3Q"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rXs-rk-kMG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1585.5072463768117" y="496.875"/>
+        </scene>
+        <!--UpdateSettings-->
+        <scene sceneID="CGS-KK-u1K">
+            <objects>
+                <viewController storyboardIdentifier="UpdateSettings" title="UpdateSettings" id="2FQ-FV-lFd" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BF6-9m-qgB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lY1-2R-pJo">
+                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <connections>
+                                    <segue destination="dui-CR-Pna" kind="embed" destinationCreationSelector="updateSettings:" id="e17-hS-WV8"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="lY1-2R-pJo" firstAttribute="top" secondItem="w4b-yu-WDq" secondAttribute="top" id="9m0-Yn-nCI"/>
+                            <constraint firstItem="lY1-2R-pJo" firstAttribute="bottom" secondItem="w4b-yu-WDq" secondAttribute="bottom" id="Ii6-4H-gNI"/>
+                            <constraint firstItem="lY1-2R-pJo" firstAttribute="leading" secondItem="w4b-yu-WDq" secondAttribute="leading" id="XdH-hR-kBg"/>
+                            <constraint firstItem="w4b-yu-WDq" firstAttribute="trailing" secondItem="lY1-2R-pJo" secondAttribute="trailing" id="Yrw-Po-CiL"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="w4b-yu-WDq"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Settings" image="icons8-settings-30" id="8LK-RN-sw8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5dT-Ic-167" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-686.95652173913049" y="492.85714285714283"/>
+        </scene>
+        <!--UpdateEmergencyContacts-->
+        <scene sceneID="oqK-T5-bgn">
+            <objects>
+                <viewController title="UpdateEmergencyContacts" id="DJf-Ye-rrF" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cVY-7N-QS8">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8tm-YJ-M6f">
+                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <connections>
+                                    <segue destination="7Kz-a0-HDC" kind="embed" destinationCreationSelector="updateEmergencyContacts:" id="7L3-JU-mHf"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="8tm-YJ-M6f" firstAttribute="leading" secondItem="BGb-BH-GiI" secondAttribute="leading" id="G5N-cZ-GAC"/>
+                            <constraint firstItem="8tm-YJ-M6f" firstAttribute="bottom" secondItem="BGb-BH-GiI" secondAttribute="bottom" id="LBf-he-W9j"/>
+                            <constraint firstItem="8tm-YJ-M6f" firstAttribute="top" secondItem="BGb-BH-GiI" secondAttribute="top" id="eSV-yD-eTo"/>
+                            <constraint firstItem="BGb-BH-GiI" firstAttribute="trailing" secondItem="8tm-YJ-M6f" secondAttribute="trailing" id="iGk-0G-PVS"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="BGb-BH-GiI"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Emergency Contacts" image="icons8-contacts-30" id="yDI-ed-WHC"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xM3-0w-hHH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="402.89855072463769" y="489.50892857142856"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="bO7-Ha-P8U">
+            <objects>
+                <hostingController id="2Ix-I8-IXd" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="83V-Vb-rMV"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Msk-gR-FvW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1600" y="1199"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="QdQ-V9-4ZZ">
+            <objects>
+                <hostingController id="dui-CR-Pna" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OJ6-nf-XAe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-680" y="1200"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="rt1-tC-wxa">
+            <objects>
+                <hostingController id="7Kz-a0-HDC" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="72A-Cl-Iu5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="376" y="1186"/>
+        </scene>
+        <!--HomeLanding-->
+        <scene sceneID="Zlv-Ie-Vnh">
+            <objects>
+                <viewController storyboardIdentifier="HomeLanding" title="HomeLanding" useStoryboardIdentifierAsRestorationIdentifier="YES" id="bfs-bX-c4n" customClass="RootTabController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="37G-Fd-sxI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Apz-CO-2XV">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <connections>
+                                    <segue destination="XYA-Bq-MYx" kind="embed" id="Dso-gE-mFN"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Apz-CO-2XV" firstAttribute="top" secondItem="ndf-Yr-xTZ" secondAttribute="top" id="6n8-8p-B0h"/>
+                            <constraint firstItem="ndf-Yr-xTZ" firstAttribute="trailing" secondItem="Apz-CO-2XV" secondAttribute="trailing" id="Nva-re-NnD"/>
+                            <constraint firstItem="ndf-Yr-xTZ" firstAttribute="bottom" secondItem="Apz-CO-2XV" secondAttribute="bottom" id="eBX-nh-MuR"/>
+                            <constraint firstItem="Apz-CO-2XV" firstAttribute="leading" secondItem="ndf-Yr-xTZ" secondAttribute="leading" id="sno-Fk-usO"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ndf-Yr-xTZ"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="P03-7S-krb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1475" y="-220"/>
+        </scene>
+        <!--HomeScreen-->
+        <scene sceneID="HfS-Ai-178">
+            <objects>
+                <tabBarController storyboardIdentifier="HomeScreen" title="HomeScreen" id="XYA-Bq-MYx" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="Dce-8e-jux">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="jNa-ck-D57" kind="relationship" relationship="viewControllers" destinationCreationSelector="loadHome:" id="AWr-qA-ffZ"/>
+                        <segue destination="2FQ-FV-lFd" kind="relationship" relationship="viewControllers" destinationCreationSelector="loadSettings:" id="QN9-3X-Egn"/>
+                        <segue destination="DJf-Ye-rrF" kind="relationship" relationship="viewControllers" destinationCreationSelector="loadEMC:" id="xzG-Eh-LkV"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rB2-PE-KSH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-684" y="-219"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="icons8-contacts-30" width="30" height="30"/>
+        <image name="icons8-home-30" width="30" height="30"/>
+        <image name="icons8-settings-30" width="30" height="30"/>
+    </resources>
+</document>
