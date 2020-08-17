@@ -14,16 +14,25 @@ import FirebaseAuth
 struct NewGroup: View
 {
     @ObservedObject var userStorage = UserStorage()
-    @ObservedObject var error = Error()
+    @ObservedObject var error = CustomError()
     
-    @State var newParticipantEmail:String=""
+    var customPopUp:CustomPopUpError = CustomPopUpError(title: "", msg: "", justMsg: true)
+    
+    
     @State var userIsCheckedOn:Bool = false
     
+    @State var showAlert:Bool = false
+    
+    
+    
+    var title:String?
+    var message:String?
+    var justAMessage:Bool?
     
     
     
     
-    var vc:UIViewController?
+    var vc:RevViewController?
     
     
     var body: some View
@@ -38,63 +47,136 @@ struct NewGroup: View
                 Spacer()
             }
             
-            
-            TextField("New Group", text: $userStorage.newGroupName).padding()
-            .background(Color.init("Whiteish"))
-            .cornerRadius(4.0)
-            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
+
+            CustomTextField(text: $userStorage.newGroupName, hintText: "New Group",    option: CustomTextField.GENERIC).padding()
+            .frame(height: 40)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1)).padding(.leading, 15).padding(.trailing, 60)
             
             HStack
             {
-                TextField("Email", text: $newParticipantEmail).frame(width: 150).padding(10)
-                .background(Color.init("Whiteish"))
-                .cornerRadius(4.0)
-                .padding(EdgeInsets(top: 10, leading: 10, bottom: 15, trailing: 10))
+                CustomTextField(text: $userStorage.email, hintText: "Email",  option: CustomTextField.USERNAME).padding().frame(width: 150).frame(height: 40)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                
                 
                 
                 
                 Button(action:
                 {
-                    print(self.newParticipantEmail)
-                    let db = Firestore.firestore()
-                    db.collection("users").whereField("email", isEqualTo: self.newParticipantEmail).getDocuments()
-                        { (querySnapshot, err) in
-                            if let err = err {
-                                print("Error getting documents: \(err)")
-                            } else {
-                                print(self.newParticipantEmail)
-                                for document in querySnapshot!.documents {
-                                    let data = document.data()
-                                    
-                                    //store fullName to display to user
-                                    self.userStorage.listDispaly.append(data["fullName"] as! String)
-                                    
-                                    //store UID for internal use
-                                    self.userStorage.groupUserIDs.append(document.documentID)
-                                }
-                            }
-                        }
                     
-                })
+                    
+                    
+                    if(Utilities.validateEmail(testStr: self.userStorage.email.lowercased()))
+                    {
+                        let db = Firestore.firestore()
+                        db.collection("users").whereField("email", isEqualTo: self.userStorage.email.lowercased()).getDocuments()
+                            { (querySnapshot, err) in
+                                if let err = err {
+                                    print("Error getting documents: \(err)")
+                                    
+                                    
+                                } else {
+                                    
+                                    
+                                    
+                                    if(querySnapshot!.documents.count == 0)
+                                    {
+                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
+                                        
+                                        
+                                        self.customPopUp.title = "Desired User is not registered"
+                                        self.customPopUp.msg = "Would you like to invite the  user?"
+                                        self.customPopUp.justMsg = false
+                                        self.showAlert = true
+                                        
+                                    }
+                                    
+                                    for document in querySnapshot!.documents
+                                    {
+                                        let data = document.data()
+                                        
+                                        
+                                        
+                                        let user : User = User(ID: document.documentID, displayName: data["fullName"] as! String, pending: true)
+                                       
+                                        if(!Utilities.emailIsAlreadyPresent(list: self.userStorage.usersInGroup, u: user))
+                                        {
+                                            self.userStorage.usersInGroup.append(user)
+                                            self.userStorage.listUsersInGroup()
+                                        }
+                                        else
+                                        {
+                                            self.customPopUp.title = "User Already Added"
+                                            self.customPopUp.msg = "Please Add a diffrent user or click submit to continue creating your group"
+                                            self.customPopUp.justMsg = true
+                                            self.showAlert = true
+                                        }
+                                        
+                                        
+                                        //reset email storage
+                                        self.userStorage.email = ""
+                                        
+                                        
+                                        /*
+                                        //store fullName to display to user
+                                        self.userStorage.listDispaly.append(data["fullName"] as! String)
+                                        
+                                        //store UID for internal use
+                                        
+                                        self.userStorage.groupUserIDs.append(document.documentID)
+                                        self.userStorage.activateCheckIn[document.documentID] = CheckInStatus(status: false)
+                                        */
+                                    }
+                                }
+                        }
+
+                    }
+                    else
+                    {
+                        self.customPopUp.title = "Invalid Email"
+                        self.customPopUp.msg = "User attempted to add user through an invalid email. Please make sure the email conforms to  username@example.com"
+                        self.customPopUp.justMsg = true
+                        self.showAlert = true
+                    }
+                    
+                    
+                }) 
                 {
                     Text("Add").foregroundColor(Color.white).padding()
                 }.background(Color.init("Grayish"))
                 
                 
                 
-            }
+            }.padding(.leading, 15)
+            Text("*select user to require the user to check in").padding(.leading, 15)
             
-            List(userStorage.listDispaly, id: \.self)
+            
+            List(userStorage.usersInGroup, id: \.ID)
             {
-                users in
+                user in
                 
                 HStack
                     {
-                        Text(users)
-                        Toggle(isOn: self.$userIsCheckedOn)
+                        Text(user.displayName)
+                        
+                        
+                        
+                        
+                        Toggle(isOn: user.$checkInStatus.isCheckedIn)
                         {
-                            Text("\(self.updateCheckIn(user: users, isCheckedOn:  self.userIsCheckedOn))")
+                            Text("")
                         }
+                        Button(action:
+                        {
+                            let index = self.userStorage.usersInGroup.firstIndex(of: user)
+                            self.userStorage.usersInGroup.remove(at: index!)
+                            
+                        })
+                        {
+                            Image("Delete")
+                        }
+                        
                         
                         
                         
@@ -119,45 +201,39 @@ struct NewGroup: View
                     .foregroundColor(Color.red)
                 
                 Spacer()
+                
+                
+                
             }
             
             
 
             Spacer()
             
-        }.background(Color.init("Logo Color"))
-        
-    }
-    func updateCheckIn(user:String, isCheckedOn:Bool) -> String
-    {
-        if isCheckedOn
-        {
-            //get index specified user ID
-            let index = self.userStorage.listDispaly.firstIndex(of: user)
-            let userID = self.userStorage.groupUserIDs[index!]
-            
-            if !(self.userStorage.checkedInOn.contains(userID))
+        }.background(Color.init("Logo Color")).alert(isPresented: self.$showAlert)
             {
-                userStorage.checkedInOn.append(userID)
-            }
-        }
-        else
-        {
-            //get index specified user ID
-            let index = self.userStorage.listDispaly.firstIndex(of: user)
-            let userID = self.userStorage.groupUserIDs[index!]
-            
-            if(self.userStorage.checkedInOn.contains(userID))
-            {
-                userStorage.checkedInOn.remove(at: index!)
+                if(customPopUp.justMsg)
+                {
+                    return Alert(title: Text(customPopUp.title), message: Text(customPopUp.msg), dismissButton: Alert.Button.cancel(Text("Ok")))
+                }
+                return Alert(title: Text(customPopUp.title), message: Text(customPopUp.msg), primaryButton: Alert.Button.default(Text("Yes"), action:
+                    {
+                        print("email is being sent to " + self.userStorage.email)
+                        //send email invitation to non registered user
+                        self.vc!.sendEmail(email: self.userStorage.email)
+                        
+                        
+                        
+                    }), secondaryButton: .cancel())
+                
+                
             }
             
-            
-            
-        }
         
-        return ""
     }
+    
+    
+    
     
     func showErrorMessage(message:String)
     {
@@ -167,19 +243,32 @@ struct NewGroup: View
     {
         let db = Firestore.firestore()
         
-        if(userStorage.newGroupName == "" || userStorage.groupUserIDs.count == 0)
+        
+        self.userStorage.sortUsers()
+        
+        //sort data from users in group
+        
+        if(userStorage.newGroupName == "" || userStorage.usersInGroup.count == 0)
         {
             self.showErrorMessage(message: "Please Fill out all of the fields")
         }
         else
         {
+            //remove the current user from pending users
+            let index = userStorage.pendingUsers.firstIndex(of: Auth.auth().currentUser!.uid)!
+            userStorage.pendingUsers.remove(at: index)
+            
+            //need a way to tell if group should be default or not
+            //if initial bootup
+            //or if there is no other group
             let dataToAdd = [
                 "groupName": userStorage.newGroupName,
+                "startTimer": false,
                 "host": Auth.auth().currentUser!.uid,
-                "pendingUsers": Utilities.restringify(array: userStorage.groupUserIDs),
-                "checkedInOn": Utilities.restringify(array: userStorage.checkedInOn),
-                "users": ""
-                ]
+                "pendingUsers": userStorage.pendingUsers,
+                "checkedInOn": userStorage.checkedInOn,
+                "users": [String]()
+                ] as [String : Any]
             print(userStorage.newGroupName)
             var ref: DocumentReference? = nil
             ref = db.collection("Groups").addDocument(data: dataToAdd)
@@ -214,11 +303,37 @@ struct NewGroup: View
                 //for invitations (in MSettings)
                 let fullName:String = data!["fullName"] as! String
                 
-                var pastGroups:[String] = Utilities.unstringify(value: data!["Groups"] as! String)
-                pastGroups.append(id)
-                let dataToAdd = ["Groups" : Utilities.restringify(array: pastGroups)]
+                var pastGroups:[String]?
+                if(data!["Groups"] == nil)
+                {
+                    pastGroups = [String]()
+                }
+                else
+                {
+                    pastGroups = (data!["Groups"] as! [String])
+                }
                 
-                db.collection("users").document(Auth.auth().currentUser!.uid).updateData(dataToAdd)
+               
+                var dataToAdd:[String:Any]?
+                
+                //automatically the default group
+                if(pastGroups!.count == 0)
+                {
+                    pastGroups!.append(id)
+                    
+                    dataToAdd = ["Groups" : pastGroups!,
+                                                   "initialBootup": false, "defaultGroup": id]
+                }
+                else
+                {
+                    pastGroups!.append(id)
+                    
+                    dataToAdd = ["Groups" : pastGroups!,
+                                     "initialBootup": false]
+                }
+                
+                
+                db.collection("users").document(Auth.auth().currentUser!.uid  ).setData(dataToAdd!, merge: true)
                     { err in
                         if let err = err
                         {
@@ -228,11 +343,17 @@ struct NewGroup: View
                         {
                             let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
                             let newVC:RevViewController = storyboard.instantiateViewController(withIdentifier: "MSettings") as! RevViewController
+                            newVC.modalPresentationStyle = .fullScreen
+                            newVC.isModalInPresentation = true
                             newVC.transferData = DataChannel()
                             //newVC.transferData!.groupName = id
                             newVC.transferData!.groupID = id
                             newVC.transferData!.groupName = self.userStorage.newGroupName
+                            
+                            self.userStorage.decodeUserList()
                             newVC.transferData!.groupUserIDs = self.userStorage.groupUserIDs
+                            
+                            
                             newVC.transferData!.hostName = fullName
                             self.vc!.present(newVC, animated: true, completion: nil)
                         }
@@ -240,7 +361,7 @@ struct NewGroup: View
             }
         }
     }
-    mutating func setVC(vc: UIViewController) 
+    mutating func setVC(vc: RevViewController)
     {
         self.vc = vc
     }

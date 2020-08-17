@@ -1,5 +1,7 @@
 import SwiftUI
 import Firebase
+import FirebaseFirestore
+import FirebaseAuth
 
 
 
@@ -9,14 +11,13 @@ struct Settings: View {
     
     @ObservedObject var userStorage = UserStorage()
     
-    @ObservedObject var error = Error()
+    @ObservedObject var error = CustomError()
     var vc: RevViewController?
     
 
     
     var body: some View
     {
-                          
         ZStack
             {
                 
@@ -25,7 +26,7 @@ struct Settings: View {
                     VStack(alignment: .center, spacing: 5)
                     {
                         
-
+                        Spacer().frame(height:8)
                         HStack
                             {
                                 Spacer()
@@ -34,81 +35,105 @@ struct Settings: View {
                         }.frame(height: 100)
                         
                         
-                        Spacer().frame(height:30)
+                        Spacer().frame(height:5)
                         
-                        //for when the user is already logged in
+            
+                        
+                            
+                if(userStorage.preset)
+                    
+                {
+                   
+                        
                         Text("Time Period to Check In")
-                        if(userStorage.preset)
-                        {
-                            Picker(selection: $userStorage.timePeriod, label: Text("").padding(0))
-                           {
-                               Text("Defualt = " + userStorage.timePeriod + " Hours ").tag(userStorage.timePeriod)
-                               Text("12 Hours").tag("12")
-                               Text("18 Hours").tag("18")
-                               Text("24 Hours").tag("24")
-                               Text("48 Hours").tag("48")
-                               Text("72 Hours").tag("72")
-                               
-                            }.frame(width: 200, height:100)
-                                .clipped().padding(.bottom, 20)
-                            
-                            
-                           Text("Time Period to Check In")
-                           TextField("Number of Warnings", text: $userStorage.numWarnings).padding()
-                            .background(Color.init("Whiteish"))
-                            .cornerRadius(4.0).padding(.trailing, 40).padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
-                            
-                           
-                           
-                           
-                           Text("Time Between the Warnings")
-    
-                           Picker(selection: $userStorage.timeBetweenWarnings, label: Text("").padding(0))
-                           {
-                               Text("Defualt = " + userStorage.timeBetweenWarnings + " Hours ").tag(userStorage.timeBetweenWarnings)
-                               Text("1 Hours").tag("1")
-                               Text("2 Hours").tag("2")
-                               Text("3 Hours").tag("3")
-                               Text("4 Hours").tag("4")
-                               
-                               
-                           }.frame(width: 200, height:100)
-                           .clipped()
-                        }
-                        //for initial sign up
-                        else
-                        {
-                            Picker(selection: $userStorage.timePeriod, label: Text("").padding(0))
-                            {
-                                Text("12 Hours").tag("12")
-                                Text("18 Hours").tag("18")
-                                Text("24 Hours").tag("24")
-                                Text("48 Hours").tag("48")
-                                Text("72 Hours").tag("72")
-                                
-                            }.frame(width: 200, height:100)
-                            .clipped().padding(.bottom, 20)
-                            
-                            TextField("Number of Warnings", text: $userStorage.numWarnings).padding()
-                            .background(Color.init("Whiteish"))
-                            .cornerRadius(4.0).padding(EdgeInsets(top: 0, leading: 20, bottom: 15, trailing: 20))
-                            
-                            
-                            Text("Time Between the Warnings")
-                            
-                            Picker(selection: $userStorage.timeBetweenWarnings, label: Text("").padding(0))
-                            {
-                                Text("1 Hours").tag("1")
-                                Text("2 Hours").tag("2")
-                                Text("3 Hours").tag("3")
-                                Text("4 Hours").tag("4")
-                                
-                            }.frame(width: 200, height:100)
-                            .clipped()
-                            
-                        }
                         
-                        Spacer().frame(height: 40)
+                         Picker(selection: $userStorage.timePeriod, label: Text("").padding(0))
+                        {
+                            Text("Current = " + userStorage.timePeriod + " Hours ").tag(userStorage.timePeriod)
+                            Text("6 Hours").tag("6")
+                            Text("12 Hours").tag("12")
+                            Text("18 Hours").tag("18")
+                            Text("24 Hours").tag("24")
+                            Text("48 Hours").tag("48")
+                            Text("72 Hours").tag("72")
+                            Text("1 Week").tag("168")
+                            Text("2 Weeks").tag("336")
+                            
+                         }.frame(height: 100).padding(EdgeInsets(top: 10, leading: 20, bottom: 50, trailing: 20))
+                        
+                        
+                    
+                        
+                    
+                    
+                        Text("Number of Warnings")
+                        
+                       Picker(selection: $userStorage.numWarnings, label: Text("").padding(0))
+                       {
+                           Text("Current = " + userStorage.numWarnings + " Hours ").tag(userStorage.numWarnings)
+                           Text("1").tag("1")
+                           Text("2").tag("2")
+                           Text("3").tag("3")
+                           Text("4").tag("4")
+                          
+                           
+                           
+                       }.frame(height: 100).padding(EdgeInsets(top: 10, leading: 20, bottom: 50, trailing: 20))
+                       
+                    
+                    
+                    HStack
+                    {
+                            Spacer()
+                            Button(action:
+                               {
+                                   self.submitInfo()
+                               })
+                           {
+                               Text("Submit").foregroundColor(Color.white).padding().frame(width: 150)
+                           }.background(Color.init("Grayish"))
+                            
+                            Spacer()
+                    }
+                    Spacer().frame(height: 20)
+                    
+                }
+                //for group creation
+                //////////////////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////////////////
+                else
+                {
+                    
+                        Text("Time Period to Check In")
+                        Picker(selection: $userStorage.timePeriod, label: Text("").padding(0))
+                        {
+                            Text("6 Hours").tag("6")
+                            Text("12 Hours").tag("12")
+                            Text("18 Hours").tag("18")
+                            Text("24 Hours").tag("24")
+                            Text("48 Hours").tag("48")
+                            Text("72 Hours").tag("72")
+                            Text("1 Week").tag("168")
+                            Text("2 Weeks").tag("336")
+                            
+                        }.frame(height: 100).padding(EdgeInsets(top: 10, leading: 20, bottom: 50, trailing: 20))
+                        
+                        
+                   
+                        Text("Number of Warnings")
+                        
+                        Picker(selection: $userStorage.numWarnings, label: Text("").padding(0))
+                        {
+                            Text("1").tag("1")
+                            Text("2").tag("2")
+                            Text("3").tag("3")
+                            Text("4").tag("4")
+                            
+                            
+                        }.frame(height: 100).padding(EdgeInsets(top: 10, leading: 20, bottom: 50, trailing: 20))
+                        
+                        
+                     
                         
                         HStack
                             {
@@ -123,18 +148,27 @@ struct Settings: View {
                                 
                                 Spacer()
                         }
-                        HStack
-                        {
-                                Spacer()
-                                Text(self.error.message).font(.system(size: 16)).foregroundColor(Color.red)
-                                Spacer()
+                        Spacer().frame(height: 20)
+                    
+                    
+                    
+                    
+                    
+                    
+                }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
                                 
                         }
+                        
+                        
                        
-                        
-                        
-                    
-                    }
                     
                 
                 
@@ -153,23 +187,36 @@ struct Settings: View {
     }
     func submitInfo()
     {
-        
           
            let db = Firestore.firestore()
            
            let uid:String = Auth.auth().currentUser!.uid
            
         
-        if(userStorage.adminPriv || !userStorage.preset)
+        if(!userStorage.preset)
         {
             if(Utilities.validateNumber(value: userStorage.numWarnings))
             {
+                //make sure the two picker options arent empty..if the user did not interact
+                //with them then they will be
+                
+                if(userStorage.timePeriod.isEmpty)
+                {
+                    userStorage.timePeriod = "6"
+                }
+                if(userStorage.numWarnings.isEmpty)
+                {
+                    userStorage.numWarnings = "1"
+                }
+                
+                //addtional screening
+                //lets say the user wants 50 notifications for a 6 hour time period with 3 hours between
+                
                  
                  db.collection("Groups").document(userStorage.selectedGroup).setData([
                         "numWarnings" : Int(userStorage.numWarnings),
                         "startingTime" : NSDate().timeIntervalSince1970,
-                        "timeBetweenWarnings": Int(userStorage.timeBetweenWarnings),
-                        "timePeriod": Int(userStorage.timePeriod)
+                        "timePeriod": Int(userStorage.timePeriod),
                     ], merge: true)
                      { err in
                              if err != nil
@@ -183,7 +230,9 @@ struct Settings: View {
                                  {
                                      self.sendInvitations()
                                      let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
-                                     let vc = storyboard.instantiateViewController(withIdentifier: "GroupsScreen")
+                                     let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                                     vc.isModalInPresentation = true
+                                     vc.modalPresentationStyle = .fullScreen
                                      
                                       self.vc!.present(vc, animated: true, completion: nil)
                                  }
@@ -199,6 +248,50 @@ struct Settings: View {
                  Utilities.showError(error: "Please Enter a Valid Number", observedObject: error)
             }
         }
+        else
+        {
+           if(Utilities.validateNumber(value: userStorage.numWarnings))
+            {
+                //make sure the two picker options arent empty..if the user did not interact
+                //with them then they will be
+                
+                if(userStorage.timePeriod.isEmpty)
+                {
+                    userStorage.timePeriod = "12"
+                }
+                if(userStorage.timeBetweenWarnings.isEmpty)
+                {
+                    userStorage.timeBetweenWarnings = "12"
+                }
+                 
+                 db.collection("Groups").document(userStorage.selectedGroup).updateData([
+                        "numWarnings" : Int(userStorage.numWarnings),
+                        "startingTime" : NSDate().timeIntervalSince1970,
+                        "timeBetweenWarnings": Int(userStorage.timeBetweenWarnings),
+                        "timePeriod": Int(userStorage.timePeriod)
+                    ])
+                     { err in
+                             if err != nil
+                             {
+                                 Utilities.showError(error: "Error Connecting to Database", observedObject: self.error)
+                             }
+                             else
+                             {
+                                 
+                                 let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
+                                 let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                                 vc.isModalInPresentation = true
+                                 vc.modalPresentationStyle = .fullScreen
+                                 
+                                  self.vc!.present(vc, animated: true, completion: nil)
+                             }
+                     }
+                
+                    
+                 
+                
+            }
+        }
         
         
     }
@@ -210,16 +303,21 @@ struct Settings: View {
         
         let dataToAdd = ["host": userStorage.hostName, "groupName": userStorage.newGroupName]
         
-        for var s in userIDs
+        for s in userIDs
         {
-            db.collection("users").document(s).collection("invitation").document(userStorage.selectedGroup).setData(dataToAdd)
-           { err in
-               if err != nil
-               {
-                    Utilities.showError(error: "Error Connecting to Database",observedObject: self.error)
-                }
-                
+            //prevent sending invitation to the host...that would be annoying
+            if(s != Auth.auth().currentUser!.uid)
+            {
+                db.collection("users").document(s).collection("invitation").document(userStorage.selectedGroup).setData(dataToAdd)
+                { err in
+                    if err != nil
+                    {
+                         Utilities.showError(error: "Error Connecting to Database",observedObject: self.error)
+                     }
+                     
+                 }
             }
+                
             
         }
         

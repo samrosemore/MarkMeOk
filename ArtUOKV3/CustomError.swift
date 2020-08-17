@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Error: ObservableObject
+class CustomError: ObservableObject
 {
     @Published var message:String
     

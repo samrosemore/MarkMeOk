@@ -26,15 +26,37 @@ class TimerFiles
                    let currentTime:Double = NSDate().timeIntervalSince1970
                    let tempTimePeriod = Double(self.userStorage.timePeriod) ?? .nan
                    let temp:Double = self.userStorage.startingTime + (tempTimePeriod * 3600)
-                    
+                   let numWarnings:Double = Double(self.userStorage.numWarnings) ?? .nan
+                   let warningTime:Double = temp - (numWarnings * 3600)
+            
+            
                    let diff:Double = temp - currentTime
+                    
+                   self.userStorage.hoursLeft = String(Int((diff / 3600)))
+        
+                    if(Int((diff / 60)) % 60 < 10)
+                    {
+                        self.userStorage.minLeft = "0" + String(Int((diff / 60)) % 60)
+                    }
+                    else
+                    {
+                        self.userStorage.minLeft = String(Int((diff / 60)) % 60)
+                    }
+            
+            
+                    if(diff < 0)
+                    {
+                        self.userStorage.hoursLeft = "00"
+                        self.userStorage.minLeft = "00"
+                        self.userStorage.expiredFlag = true
+                        print(self.userStorage.endDate)
+                    }
+                    else if(currentTime >= warningTime)
+                    {
+                        self.userStorage.warningFlag = true
+                    }
                    
-                    let hours = ceil(diff / 3600)
                     
-                    let minutes = Int(round(diff / 60)) % 60
-                    
-                   self.userStorage.hoursLeft = Int((diff / 3600))
-                   self.userStorage.minLeft = Int((diff / 60)) % 60
                    
                }
     }

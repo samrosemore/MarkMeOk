@@ -13,22 +13,110 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 import UIKit
 import UserNotifications
 import Firebase
+import FirebaseMessaging
+import FirebaseCore
+import FirebaseAuth
+import GoogleSignIn
+import FirebaseFirestore
 
 
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate
+{
+    
   var window: UIWindow?
   let gcmMessageIDKey = "gcm.message_id"
+    
+    
+  
 
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?)
+    {
+         if error != nil
+         {
+           // ...
+           print("error")
+           return
+         }
+            
+            
+
+            guard let authentication = user?.authentication else { return }
+            let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
+                 // ...
+               
+                 Auth.auth().signIn(with: credential)
+                 { (authResult, error) in
+                   
+                   if error != nil
+                   {
+                       print("well shit")
+                   }
+                   else
+                   {
+                    
+                    //
+                    if(authResult!.additionalUserInfo!.isNewUser)
+                     {
+                        //so new user
+                        //store extra data
+                            let user = Auth.auth().currentUser!
+                            let email = user.email
+                            let name = user.displayName
+                            
+                        
+                            let db = FirebaseFirestore.Firestore.firestore();
+                            
+                            //now store the extra user info
+                        db.collection("users").document(Auth.auth().currentUser!.uid).setData(["fullName": name ?? "", "email": email ?? "", "Groups": [String](), "initialBootup": true])
+                                { err in
+                                    if let err = err
+                                    {
+                                        print("Error writing document: \(err)")
+                                        //if this fails this will cause a ton of errors
+                                        //might want to just delete the users and send them back to the login screen
+                                    }
+                                }
+                     }
+                   }
+                    
+                   // User is signed in
+                   // ...
+                 }
+    }
+    
+    
+      
+    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!)
+    {
+        // Perform any operations when the user disconnects from app here.
+        // ...
+    }
+    
+    @available(iOS 9.0, *)
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
+        return GIDSignIn.sharedInstance().handle(url)
+    }
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        return GIDSignIn.sharedInstance().handle(url)
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
     FirebaseApp.configure()
+    
+    GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
+    GIDSignIn.sharedInstance().delegate = self
+    
 
     // [START set_messaging_delegate]
     Messaging.messaging().delegate = self
@@ -55,6 +143,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // [END register_for_notifications]
     return true
   }
+    func applicationDidBecomeActive(_ application: UIApplication)
+    {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
 
   // [START receive_message]
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {

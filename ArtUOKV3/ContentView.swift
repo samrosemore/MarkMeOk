@@ -29,12 +29,12 @@ struct ContentView: View
                 {
                     
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let newVc = storyboard.instantiateViewController(withIdentifier: "Login")
+                    let newVc = storyboard.instantiateViewController(withIdentifier: "Tutorial")
                     
                     self.vc!.present(newVc, animated: true, completion: nil)
                     
                 }) {
-                    Text("Login").foregroundColor(Color.white).padding(.horizontal, 25).padding()
+                    Text("Tutorial").foregroundColor(Color.white).padding(.horizontal, 25).padding()
                 }.background(Color.init("Grayish"))
                 
                 Button(action:
@@ -44,7 +44,7 @@ struct ContentView: View
                     
                     self.vc!.present(newVc, animated: true, completion: nil)
                 }) {
-                    Text("Sign Up").foregroundColor(Color.white).padding(.horizontal, 25).padding()
+                    Text("Set Up an Account").foregroundColor(Color.white).padding(.horizontal, 25).padding()
                 }.background(Color.init("Grayish"))
                 
             }

@@ -6,9 +6,13 @@
 //  Copyright © 2020 Sam Rosemore. All rights reserved.
 //
 
+import UIKit
 import SwiftUI
 import Firebase
 import FirebaseAuth
+import FirebaseInstanceID
+import FirebaseFirestore
+import GoogleSignIn
 
 struct Login: View
 {
@@ -16,53 +20,158 @@ struct Login: View
     @State private var password: String = ""
     
     @ObservedObject var userStorage = UserStorage()
-    @ObservedObject var error = Error()
+    @ObservedObject var error = CustomError()
     var vc: RevViewController?
     
     var body: some View {
-        VStack(alignment: .center, spacing: 50)
+        VStack(alignment: .center, spacing: 30)
         {
-            Spacer()
+            Spacer().frame(height:20)
+             
+             Image("MarkMeOkay(logo)01").resizable().scaledToFit()
             
-            Text("Login").font(.system(size: 30))
-            
-            Spacer().frame(height:-10)
             
             HStack(alignment: .center)
                 {
-                    Spacer()
+                    Spacer().frame(width: 30)
+                    
+                    VStack(alignment: .center, spacing: 30)
+                    {
+                        CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME).padding()
+                        .frame(height: 40)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                        CustomTextField(text: $userStorage.password, hintText: "Password", option: CustomTextField.PASSWORD)
+                        .padding()
+                        .frame(height: 40)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                    }
                     
                     
-                    TextField("Email", text: $userStorage.email).padding()
+                        
+                    /*
+                    ZStack(alignment: .leading)
+                    {
+                        TextField("", text: $userStorage.email).padding()
+                            .foregroundColor(.black)
                         .background(Color.init("Whiteish"))
-                    .cornerRadius(4.0)
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 15, trailing: 0))
+                        .cornerRadius(4.0)
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
+                        .onTapGesture
+                        {
+                            if self.userStorage.email.isEmpty
+                            {
+                                self.userStorage.email = " "
+                            }
+                            
+                        }
+                        if(userStorage.email.isEmpty)
+                        {
+                            Text("Email").padding().foregroundColor(.black).background(Color.init("Whiteish"))
+                            .cornerRadius(4.0)
+                            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 40))
+                            .onTapGesture
+                            {
+                                if self.userStorage.email.isEmpty
+                                {
+                                    self.userStorage.email = " "
+                                }
+                                
+                            }
+                        }
+                    }
+                    */
                     
-                    Spacer()
-            }
-            HStack(alignment: .center)
-                {
-                    Spacer()
-                    
-                    TextField("Password", text: $userStorage.password).padding()
-                    .background(Color.init("Whiteish"))
-                    .cornerRadius(4.0)
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 15, trailing: 0))
-                    
-                    Spacer()
-            }
-            
+                    Spacer().frame(width:30)
+                }
             
             Button(action:
                 {
                     self.loginUser()
                 })
             {
-                Text("Login").foregroundColor(Color.white).padding(.horizontal, 50).padding()
+                Text("Login").font(.system(size: 18)).foregroundColor(Color.white).padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height: 50)
+                
             }.background(Color.init("Grayish"))
-            Text(self.error.message).font(.system(size: 16)).foregroundColor(Color.red)
+            
+            Button(action: {
+                self.vc!.attemptGoogleLogin()
+            })
+            {
+                HStack
+                {
+                    Image("google")
+                    Text("Sign In").font(.system(size: 18)).foregroundColor(Color.init("DarkGrayish"))
+                    
+                }.padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height:50).background(Color.white)
+                
+            }
+            
+            
+            
+            HStack(alignment: .center, spacing: 20)
+            {
+                Button(action:
+                {
+                    let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                    let newVC = storyBoard.instantiateViewController(identifier: "SignUp")
+                    self.vc!.present(newVC, animated: true, completion: nil)
+                    
+                })
+                {
+                    Text("Sign Up?").foregroundColor(Color.blue).padding(10)
+                }
+                
+                Button(action:
+                {
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let newVc = storyboard.instantiateViewController(withIdentifier:"resetPassword")
+                    
+                    self.vc!.present(newVc, animated: true, completion: nil)
+                }) {
+                    Text("Reset Password?").foregroundColor(Color.blue).padding(10)
+                }
+                
+            }
+            
+            VStack(alignment:.center)
+            {
+                Text("By Signing Up/Logging in you agree to ").foregroundColor(Color.black).font(.system(size: 12))
+                HStack(alignment: .firstTextBaseline, spacing: 0)
+                {
+                    
+                    
+                    Button(action:
+                    {
+                        let link = URL(string: "https://www.google.com/")!
+                        UIApplication.shared.open(link)
+                    })
+                    {
+                        Text("the Terms of Conditions ").foregroundColor(Color.black).font(.system(size: 12)).underline()
+                    }
+                    Text("and the ").foregroundColor(Color.black).font(.system(size: 12))
+                    
+                    Button(action: {
+                        let link = URL(string: "https://www.google.com/")!
+                        UIApplication.shared.open(link)
+                        
+                    })
+                    {
+                        Text("Privacy Policy").foregroundColor(Color.black).font(.system(size: 12)).underline()
+                    }
+                }
+            }
+            
+            
+            
+            
+        
+            Text(self.error.message).font(.system(size: 20)).foregroundColor(Color.red)
+            
             
             Spacer()
+            
         }.background(Color.init("Logo Color"))
     }
     
@@ -78,7 +187,8 @@ struct Login: View
     func loginUser()
     {
         
-        Auth.auth().signIn(withEmail: userStorage.email, password: userStorage.password)
+        userStorage.email = userStorage.email.lowercased()
+        Auth.auth().signIn(withEmail: userStorage.email.trimmingCharacters(in: .whitespacesAndNewlines), password: userStorage.password.trimmingCharacters(in: .whitespacesAndNewlines))
         {
             (result, error) in
             
@@ -90,8 +200,9 @@ struct Login: View
             {
                 
                 let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "GroupsScreen")
-                
+                let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                vc.isModalInPresentation = true
+                vc.modalPresentationStyle = .fullScreen
                 self.vc!.present(vc, animated: true, completion: nil)
                 
                 //register device for notifications
@@ -113,6 +224,9 @@ struct Login: View
             }
         }
     }
+    
+    
+    
 }
 
 struct Login_Previews: PreviewProvider {

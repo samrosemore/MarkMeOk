@@ -2,12 +2,16 @@ import UIKit
 import SwiftUI
 import FirebaseAuth
 import Firebase
+import FirebaseFirestore
+import FirebaseInstanceID
+import MessageUI
+import GoogleSignIn
 
 
 
 
 
-class RevViewController: UIViewController
+class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
 {
     var signUp: SignUp?
     
@@ -34,9 +38,106 @@ class RevViewController: UIViewController
     
     var userStorage:UserStorage?
     
+    var helpScreen:Help?
+    
+    var initial:ContentView?
+    
+    var disclamer:Disclamer?
+    
+    var faq:FAQ?
+    
+    var tutorial:Tutorial?
     
     
-    @IBSegueAction func loaoMSettings(_ coder: NSCoder) -> UIViewController? {
+    
+    
+    @IBSegueAction func loadAccount(_ coder: NSCoder) -> UIViewController? {
+        return UIHostingController(coder: coder, rootView: Acount())
+    }
+    
+    @IBSegueAction func loadFAQ(_ coder: NSCoder) -> UIViewController? {
+        faq = FAQ()
+        
+        let storage = faq!.getUserStorage()
+        
+        let db = Firestore.firestore()
+        let ref = db.collection("FAQ");
+        
+        ref.getDocuments()
+           { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for doc in querySnapshot!.documents
+                    {
+                        
+                        let question = doc.get("Question") as! String
+                        let answer = doc.get("Answer") as! String
+                        
+                        let fq = FCell(question: question, answer: answer)
+                         
+                        storage.faqQuestions.append(fq)
+                    }
+                    
+                }
+            }
+        
+        
+        
+        return UIHostingController(coder: coder, rootView: faq)
+    }
+    
+    @IBSegueAction func loadAbout(_ coder: NSCoder) -> UIViewController? {
+        return UIHostingController(coder: coder, rootView: About())
+    }
+    
+    @IBSegueAction func loadDisclamer(_ coder: NSCoder) -> UIViewController?
+    {
+        
+        
+        disclamer = Disclamer()
+        disclamer!.setVC(vc:self)
+        return UIHostingController(coder: coder, rootView: disclamer)
+    }
+    
+    @IBSegueAction func loadTutorial(_ coder: NSCoder) -> UIViewController?
+    {
+        tutorial = Tutorial()
+        let storage = tutorial!.getUserStorage()
+        tutorial!.setVC(vc: self)
+        
+        let db = Firestore.firestore()
+        let docRef = db.collection("users").document(Auth.auth().currentUser!.uid)
+        docRef.getDocument()
+        {
+                (snapshot, error) in
+                
+                if error != nil{
+                    print("well shit")
+                }
+                else
+                {
+                    let data = snapshot?.data()
+                    if(data?["initialBootup"] != nil)
+                    {
+                        let isInitialBootup = data?["initialBootup"] as! Bool
+                        
+                        if(isInitialBootup)
+                        {
+                            storage.initialBootup = true
+                        }
+                        
+                    }
+                }
+        }
+        
+        
+        return UIHostingController(coder: coder, rootView: tutorial)
+    }
+    
+    
+    @IBSegueAction func loaoMSettings(_ coder: NSCoder) -> UIViewController?
+    {
         setSettings = Settings()
         setSettings!.setVC(vc: self)
         setSettings!.userStorage.preset = false
@@ -50,11 +151,24 @@ class RevViewController: UIViewController
     @IBSegueAction func createNewGroup(_ coder: NSCoder) -> UIViewController? {
         newGroup = NewGroup()
         newGroup!.setVC(vc: self)
+        
+        let storage = newGroup!.getData()
+         
+        let uid = Auth.auth().currentUser!.uid
+        let fullName = "Me"
+        let email = Auth.auth().currentUser!.email
+        let thisUser = User(ID: uid, displayName: fullName, pending: true)
+        
+        storage.usersInGroup.append(thisUser)
+        storage.listUsersInGroup()
+        
+        
+        
         return UIHostingController(coder: coder, rootView: newGroup)
     }
     @IBSegueAction func loadGroups(_ coder: NSCoder) -> UIViewController?
     {
-        print("loading groups")
+        
         groups = Groups()
         
         
@@ -79,10 +193,75 @@ class RevViewController: UIViewController
                 else
                 {
                     let data = snapshot!.data()
-                    storage.groupIDs = Utilities.unstringify(value: (data?["Groups"] as! String))
-                    storage.convertGroupIDsToName()
                     
+                    if(data?["Groups"] != nil)
+                    {
+                        
+                        //this is a temporary holding list
+                        //storage.groupIDs = (data?["Groups"] as! [String])
+                        
+                        //this command will transfer data into a more usable form of
+                        //storage
+                        
+                        
+                        
+                        for id in (data?["Groups"] as! [String])
+                        {
+                            let defaultGroup = (data?["defaultGroup"] as? String)
+                            if(defaultGroup != nil)
+                            {
+                                    if((data?["defaultGroup"] as! String) == id)
+                                    {
+                                        var curr:Group = Group(id: id)
+                                        curr.defaultStatus.isDefualtGroup = true
+                                        storage.tempGroups.append(curr)
+                                    }
+                                    else
+                                    {
+                                        var curr:Group = Group(id: id)
+                                        storage.tempGroups.append(curr)
+                                    }
+                            }
+                            else
+                            {
+                                var curr:Group = Group(id: id)
+                                storage.tempGroups.append(curr)
+                            }
+                            
+                        }
+                        storage.convertGroupIDsToName()
+                        
+                        
+                        
+                        
+                        
+                    }
                     
+                    //first take into account the older versions of the app
+                    if(data?["initialBootup"] != nil)
+                    {
+                        if(data!["initialBootup"] as! Bool)
+                        {
+                            
+                            
+                            
+                            let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
+                            let newVc = storyboard.instantiateViewController(withIdentifier:"Tutorial")
+                            newVc.isModalInPresentation = true
+                            newVc.modalPresentationStyle = .fullScreen
+                            self.present(newVc, animated: true, completion: nil)
+                            
+                        }
+                        else if((data?["defaultGroup"] as? String) != nil)
+                        {
+                            
+                           let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                           let vc : RootTabController = (storyboard.instantiateViewController(withIdentifier: "HomeLanding") as? RootTabController)!
+                            vc.groupName = (data?["defaultGroup"] as! String)
+                           self.present(vc, animated: true, completion: nil)
+                        }
+                        
+                    }
                 }
                 
             }
@@ -133,7 +312,7 @@ class RevViewController: UIViewController
                 
         updateEmergencyContacts = EmergencyContacts()
         let storage = updateEmergencyContacts!.getData()
-        let uid:String = Auth.auth().currentUser!.uid
+       
         let db = Firestore.firestore()
         
         
@@ -151,7 +330,8 @@ class RevViewController: UIViewController
                     
                     let data = snapshot!.data()
                     //group IDs of user
-                    storage.groupUsers = Utilities.unstringify(value: data!["users"] as! String)
+                    storage.groupUsers = (data!["users"] as! [String])
+                    storage.groupUsers.append(data!["host"] as! String)
                     
                     for id in storage.groupUsers
                     {
@@ -173,10 +353,32 @@ class RevViewController: UIViewController
                         }
                     }
                     
-                    storage.pendingUsers = Utilities.unstringify(value: data!["pendingUsers"] as! String)
+                    storage.pendingUsers =  data!["pendingUsers"] as! [String]
+                    
+                    for id in storage.pendingUsers
+                    {
+                        db.collection("users").document(id).getDocument
+                        {
+                            (snapshot, error) in
+                            
+                            if let err = error
+                            {
+                                debugPrint("error fetching data\(err)")
+                            }
+                            else
+                            {
+                                let data = snapshot!.data()
+                                storage.altListDisplay2.append(data!["fullName"] as! String)
+                                
+                            }
+                            
+                        }
+                    }
+                    
+                    
                     
                     //group IDs of checked in On
-                    storage.checkedInOn = Utilities.unstringify(value: data!["checkedInOn"] as! String)
+                    storage.checkedInOn =  (data!["checkedInOn"] as! [String])
                     
                     for id in storage.checkedInOn
                     {
@@ -235,7 +437,7 @@ class RevViewController: UIViewController
                 
                 storage.timePeriod = String(data?["timePeriod"] as! Int)
                 storage.numWarnings = String(data?["numWarnings"] as! Int)
-                storage.timeBetweenWarnings = String(data?["timeBetweenWarnings"] as! Int)
+                
             
             }
         }
@@ -245,7 +447,7 @@ class RevViewController: UIViewController
     
     @IBSegueAction func loadHomeScreen(_ coder: NSCoder) -> UIViewController?
     {
-        print("hello")
+       
         
         
         homeScreen = HomeScreen()
@@ -254,15 +456,16 @@ class RevViewController: UIViewController
         let storage = homeScreen!.getData()
         
         
+        
         if(self.transferData != nil)
         {
             self.userStorage!.selectedGroup = self.transferData!.groupName
             
             let db = Firestore.firestore()
             
-            //make this a reference to a specific group
+       
             
-            //using dummy group for now
+           
             let docRef = db.collection("Groups").document(self.userStorage!.selectedGroup)
             
             docRef.getDocument
@@ -274,23 +477,73 @@ class RevViewController: UIViewController
                     {
                         let data = snapshot!.data()
                         
-                        //I think its already a double
-                        storage.startingTime = data?["startingTime"] as! Double
-                        storage.timePeriod = String(data?["timePeriod"] as! Int)
-                        
-                        self.timerFiles = TimerFiles(userStorage: storage)
-                        self.timerFiles!.startHomeScreenTimer()
-                        
-                        //check for admin privliges
-                        let checkInOn:[String] = Utilities.unstringify(value: data?["checkedInOn"] as! String)
-                        
-                        if(checkInOn.contains(Auth.auth().currentUser!.uid))
+                        if(data?["startingTime"] == nil || data?["timePeriod"] == nil || data?["checkedInOn"] == nil || data?["groupName"] == nil)
                         {
-                            storage.adminPriv = false;
+                            //delete the group
+                            let docRef = db.collection("Groups").document(self.userStorage!.selectedGroup)
+                            
+                            docRef.delete()
+                            {
+                                err in
+                                if err != nil
+                                {
+                                    print(err ?? "")
+                                }
+                                else
+                                {
+                                    //and send the user back
+                                    let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
+                                    let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                                    vc.isModalInPresentation = true
+                                    vc.modalPresentationStyle = .fullScreen
+                                    self.present(vc, animated: true, completion: nil)
+                                }
+                            }
+                            
+                            
+                            
+                            
                         }
                         else
                         {
-                            storage.adminPriv = true;
+                           storage.startingTime = data?["startingTime"] as! Double
+                           storage.timePeriod = String(data?["timePeriod"] as! Int)
+                           storage.numWarnings = String(data?["numWarnings"] as! Int)
+                           storage.groupName = String(data?["groupName"] as! String)
+                            
+                            //make sure you should start the timer
+                            storage.startTimer = data?["startTimer"] as! Bool
+                            if(storage.startTimer)
+                            {
+                                 let expireTime = storage.startingTime + ((Double(storage.timePeriod) ?? .nan) * 3600)
+                                 if(expireTime < NSDate().timeIntervalSince1970)
+                                 {
+                                     let date = NSDate(timeIntervalSince1970: expireTime)
+                                     let formatter = DateFormatter()
+                                     formatter.timeZone = TimeZone.current
+                                     formatter.dateFormat = "HH:mm dd-MM-yyyy"
+                                     storage.endDate = formatter.string(from: date as Date)
+                                 }
+                                
+                                self.timerFiles = TimerFiles(userStorage: storage)
+                                self.timerFiles!.startHomeScreenTimer()
+                                
+                                //check for admin privliges
+                                let checkInOn:[String] = (data?["checkedInOn"] as! [String])
+                                
+                                if(checkInOn.contains(Auth.auth().currentUser!.uid))
+                                {
+                                    storage.adminPriv = false;
+                                }
+                                else
+                                {
+                                    storage.adminPriv = true;
+                                }
+
+                            }
+                            
+                            
+                            
                         }
                         
                         
@@ -306,23 +559,53 @@ class RevViewController: UIViewController
     }
     @IBSegueAction func loadLogin(_ coder: NSCoder) -> UIViewController?
     {
-        login = Login()
-        login!.setVC(vc: self)
+        if(Auth.auth().currentUser != nil)
+        {
+            //if you went through google sign up
+            //update rt
+            InstanceID.instanceID().instanceID(handler:
+                {
+                    (result, error) in
+                    
+                    if let err = error
+                    {
+                        print("shit there was an err \(err)")
+                    }
+                    else if let res = result
+                    {
+                        //database call to register token
+                        let db = Firestore.firestore()
+                        db.collection("users").document(Auth.auth().currentUser!.uid).setData(["rt" : res.token], merge: true)
+                        
+                        let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
+                        let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                        vc.isModalInPresentation = true
+                        vc.modalPresentationStyle = .fullScreen
+                        self.present(vc, animated: true, completion: nil)
+                    }
+                })
+            
+        }
+        else
+        {
+            login = Login()
+            login!.setVC(vc: self)
+        }
+        
+        
+        
         return UIHostingController(coder: coder, rootView: login)
     }
     
-    @IBSegueAction func loadInitialVC(_ coder: NSCoder) -> UIViewController?
+    
+    
+  
+    @IBSegueAction func loadResetPassword(_ coder: NSCoder) -> UIViewController?
     {
-        
-        
-        
-        var contentView = ContentView()
-        contentView.setVC(vc: self)
-        return UIHostingController(coder: coder, rootView: contentView)
+        var resetPassword = ResetPassword()
+        resetPassword.setVC(vc: self)
+        return UIHostingController(coder: coder, rootView: resetPassword)
     }
-    
-    
-    
     
     @IBSegueAction func loadSignUp(_ coder: NSCoder) -> UIViewController?
     {
@@ -333,7 +616,67 @@ class RevViewController: UIViewController
         return UIHostingController(coder: coder, rootView: signUp)
     }
     
+    func sendEmail(email:String)
+    {
+        
+        
+       
+        
+        
+        print("this is the email: " + newGroup!.userStorage.email)
+        
+        let swiftLink:String =  "https://itunes.apple.com/us/app/urbanspoon/id1521328421"
+        let androidLink:String = "https://play.google.com/store/apps/details?id=com.ncourage.markmeok"
+        
+        let subject = "You are invited to join the MarkMeOK community"
+        
+        let msg = "<p>Join the MarkMeOK Community! Tap the Link Below to Download the App <br> <a href=\(swiftLink)> For IOS version></a> <br>  <a href=\(androidLink)>For Playstore Version></a></p>"
+
+        if !MFMailComposeViewController.canSendMail()
+        {
+          // Device can't send email
+          return
+        }
+        let mailer = MFMailComposeViewController()
+        mailer.mailComposeDelegate = self
+        var array = [String]()
+        array[0] = email
+        mailer.setToRecipients(array)
+        mailer.setSubject(subject)
+        mailer.setMessageBody(msg, isHTML: true)
+        self.present(mailer, animated: true, completion:
+        {
+            self.newGroup?.userStorage.email = ""
+        })
+                    
+             
+        
+        
+    }
+    func mailComposeController(_ controller: MFMailComposeViewController,
+    didFinishWith result: MFMailComposeResult,
+            error: Error?)
+    {
+        controller.dismiss(animated: true)
+    }
+    
+    
    
+    @IBSegueAction func loadHelpScreen(_ coder: NSCoder) -> UIViewController?
+    {
+        helpScreen = Help()
+        
+        return UIHostingController(coder: coder, rootView: helpScreen )
+    }
+    
+    
+    
+    //only called by log in screen
+    func attemptGoogleLogin()
+    {
+        GIDSignIn.sharedInstance()?.presentingViewController = self
+        GIDSignIn.sharedInstance().signIn()
+    }
     
     
     
@@ -621,8 +964,10 @@ class RevViewController: UIViewController
     
     override func viewDidLoad()
     {
-
+        
         super.viewDidLoad()
+        
+        
 
         // Do any additional setup after loading the view.
     }

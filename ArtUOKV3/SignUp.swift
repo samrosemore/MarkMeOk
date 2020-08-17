@@ -2,13 +2,14 @@
 //  SignUp.swift
 //  ArtUOKV2
 //
-//  Created by Sam Rosemore on 5/13/20.
-//  Copyright © 2020 Justin Rosemore. All rights reserved.
+//  Created by Sam Rosemore on 7/22/20.
+//  Copyright © 2020 Sam Rosemore. All rights reserved.
 //
 
 import SwiftUI
 import FirebaseAuth
 import Firebase
+import FirebaseFirestore
 
 
 
@@ -18,7 +19,7 @@ struct SignUp: View
     
     @ObservedObject var userStorage = UserStorage()
     
-    @ObservedObject var error = Error()
+    @ObservedObject var error = CustomError()
     var vc: RevViewController?
     
     
@@ -26,47 +27,87 @@ struct SignUp: View
         VStack(alignment: .center, spacing: 30)
         {
              
-            Spacer().frame(height: 10)
+            Spacer()
             
             Text("Sign Up").font(.system(size: 30))
             
+            Spacer().frame(height:40)
             
-            TextField("John Doe", text: $userStorage.fullName).padding()
-                .background(Color.init("Whiteish"))
-            .cornerRadius(4.0)
-            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
-            
-            TextField("johnDoe@gmail.com", text: $userStorage.email).padding()
-            .background(Color.init("Whiteish"))
-            .cornerRadius(4.0)
-            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
-            
-            TextField("joDoe", text: $userStorage.username).padding()
-            .background(Color.init("Whiteish"))
-            .cornerRadius(4.0)
-            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
-            
-            TextField("1234", text: $userStorage.password).padding()
-            .background(Color.init("Whiteish"))
-            .cornerRadius(4.0)
-            .padding(EdgeInsets(top: 0, leading: 10, bottom: 15, trailing: 10))
-              
-            
-            
-            
-            
-                
-            Spacer()
-            
-            
+            HStack{
+                Spacer().frame(width: 30)
+                VStack(alignment: .center, spacing: 30)
+                {
+                    CustomTextField(text: $userStorage.fullName, hintText: "Full Name", option: CustomTextField.GENERIC)
+                    .padding()
+                    
+                    .frame(height: 40)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                    
+                    CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME).padding()
+                    .frame(height: 40)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                    
+                    
+                    
+                    CustomTextField(text: $userStorage.password, hintText: "Password", option: CustomTextField.NEW_PASSWORD).padding()
+                    
+                    .frame(height: 40)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                }
+                Spacer().frame(width:30)
+            }
             
             Button(action:
                 {
                     self.signUpUser()
                 })
             {
-                Text("Sign Up").foregroundColor(Color.white).padding()
+                Text("Sign Up").font(.system(size: 18)).foregroundColor(Color.white).padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height: 50)
             }.background(Color.init("Grayish"))
+            
+            Button(action: {
+                self.vc!.attemptGoogleLogin()
+            })
+            {
+                HStack
+                {
+                    Image("google")
+                    Text("Sign In").font(.system(size: 18)).foregroundColor(Color.init("DarkGrayish"))
+                    
+                }.padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height:50).background(Color.white)
+                
+            }
+            
+            VStack(alignment:.center)
+            {
+                Text("By Signing Up/Logging in you agree to ").foregroundColor(Color.black).font(.system(size: 12))
+                HStack(alignment: .firstTextBaseline, spacing: 0)
+                {
+                    
+                    
+                    Button(action:
+                    {
+                        let link = URL(string: "https://www.google.com/")!
+                        UIApplication.shared.open(link)
+                    })
+                    {
+                        Text("the Terms of Conditions ").foregroundColor(Color.black).font(.system(size: 12)).underline()
+                    }
+                    Text("and the ").foregroundColor(Color.black).font(.system(size: 12))
+                    
+                    Button(action: {
+                        let link = URL(string: "https://www.google.com/")!
+                        UIApplication.shared.open(link)
+                        
+                    })
+                    {
+                        Text("Privacy Policy").foregroundColor(Color.black).font(.system(size: 12)).underline()
+                    }
+                }
+            }
              
             
             Text(self.error.message).font(.system(size: 16)).foregroundColor(Color.red)
@@ -81,6 +122,13 @@ struct SignUp: View
     
     func signUpUser()
     {
+        userStorage.email = userStorage.email.trimmingCharacters(in: .whitespacesAndNewlines)
+        userStorage.email = userStorage.email.lowercased()
+        userStorage.password = userStorage.password.trimmingCharacters(in: .whitespacesAndNewlines)
+        userStorage.fullName = userStorage.fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        
+        
         
                
         if(Utilities.validateEmail(testStr: userStorage.email))
@@ -98,9 +146,10 @@ struct SignUp: View
                            }
                            else
                            {
-                            let db = Firestore.firestore()
+                           let db = FirebaseFirestore.Firestore.firestore();
+                            
                             //now store the extra user info
-                            db.collection("users").document(Auth.auth().currentUser!.uid).setData(["fullName": self.userStorage.fullName, "email": self.userStorage.email, "Groups": ""])
+                            db.collection("users").document(Auth.auth().currentUser!.uid).setData(["fullName": self.userStorage.fullName, "email": self.userStorage.email, "Groups": [String](), "initialBootup": true])
                                 { err in
                                     if let err = err
                                     {
@@ -108,7 +157,8 @@ struct SignUp: View
                                     } else {
                                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
                                         let newVC = storyboard.instantiateViewController(withIdentifier: "Login")
-                                        
+                                        newVC.isModalInPresentation = true
+                                        newVC.modalPresentationStyle = .fullScreen
                                         self.vc!.present(newVC, animated: true, completion: nil)
                                         print("created new user")
                                     }

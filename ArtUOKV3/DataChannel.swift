@@ -18,6 +18,9 @@ class DataChannel: ObservableObject
     
     @Published var adminPriv = false
     
+    @Published var initialBootup = false;
+    
+    
     init()
     {
         

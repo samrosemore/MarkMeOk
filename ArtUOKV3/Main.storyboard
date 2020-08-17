@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="aUo-PV-5NT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="OEZ-pA-Gda">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -7,13 +7,82 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--resetPassword-->
+        <scene sceneID="v6A-hb-QxL">
+            <objects>
+                <viewController storyboardIdentifier="resetPassword" title="resetPassword" useStoryboardIdentifierAsRestorationIdentifier="YES" id="SpL-91-sgd" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2rP-Ek-fjG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GHx-Vn-zTJ">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <connections>
+                                    <segue destination="6zl-vt-1Jz" kind="embed" destinationCreationSelector="loadResetPassword:" id="li7-45-Lol"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="GHx-Vn-zTJ" firstAttribute="trailing" secondItem="Eg9-l3-Kkz" secondAttribute="trailing" id="6Hc-Vs-Uzk"/>
+                            <constraint firstItem="GHx-Vn-zTJ" firstAttribute="top" secondItem="Eg9-l3-Kkz" secondAttribute="top" id="AFS-KB-Q6A"/>
+                            <constraint firstItem="GHx-Vn-zTJ" firstAttribute="leading" secondItem="Eg9-l3-Kkz" secondAttribute="leading" id="sB9-g9-57S"/>
+                            <constraint firstItem="GHx-Vn-zTJ" firstAttribute="bottom" secondItem="Eg9-l3-Kkz" secondAttribute="bottom" id="uBy-oN-nyb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Eg9-l3-Kkz"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q47-KD-hQP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1094.2028985507247" y="-1227.4553571428571"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="9ij-Pr-qNp">
+            <objects>
+                <hostingController id="SYv-Kr-VtB" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uwq-rO-ufS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="510" y="-552"/>
+        </scene>
         <!--Hosting Controller-->
         <scene sceneID="BtS-dM-9gD">
             <objects>
                 <hostingController id="3KN-T1-POY" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dcp-i5-VIP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="211" y="-1246"/>
+            <point key="canvasLocation" x="1762" y="-561"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="56j-8v-92y">
+            <objects>
+                <hostingController id="6zl-vt-1Jz" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="scL-4w-vTQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1076" y="-561"/>
+        </scene>
+        <!--Disclamer-->
+        <scene sceneID="bUJ-yK-1Xa">
+            <objects>
+                <viewController storyboardIdentifier="Disclamer" title="Disclamer" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aWq-Ek-0f6" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3iy-v9-znv">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8ez-Nw-5ff">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <connections>
+                                    <segue destination="SYv-Kr-VtB" kind="embed" destinationCreationSelector="loadDisclamer:" id="ZnL-z3-l4E"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="Bfs-Jw-O3i"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hCV-3z-LBB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="508.69565217391306" y="-1222.0982142857142"/>
         </scene>
         <!--SignUp-->
         <scene sceneID="Uto-XE-MAc">
@@ -43,51 +112,18 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fzK-9J-cnv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="200.00000000000003" y="-555.13392857142856"/>
-        </scene>
-        <!--InitialVC-->
-        <scene sceneID="t5w-hZ-EM4">
-            <objects>
-                <viewController title="InitialVC" id="aUo-PV-5NT" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="GAr-8o-GtZ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Hw-1N-sHd">
-                                <rect key="frame" x="128" y="703" width="159" height="46"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            </button>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kLf-Zu-FN5">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
-                                <connections>
-                                    <segue destination="e50-ab-icO" kind="embed" identifier="loadInitialVC" destinationCreationSelector="loadInitialVC:" id="9N0-p2-Z8T"/>
-                                </connections>
-                            </containerView>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="s9F-qn-aiC" firstAttribute="trailing" secondItem="kLf-Zu-FN5" secondAttribute="trailing" id="LeE-jd-FVt"/>
-                            <constraint firstItem="kLf-Zu-FN5" firstAttribute="top" secondItem="s9F-qn-aiC" secondAttribute="top" id="P5f-pz-fYd"/>
-                            <constraint firstItem="kLf-Zu-FN5" firstAttribute="leading" secondItem="s9F-qn-aiC" secondAttribute="leading" id="hUu-2b-5hA"/>
-                            <constraint firstItem="kLf-Zu-FN5" firstAttribute="bottom" secondItem="s9F-qn-aiC" secondAttribute="bottom" id="kah-nU-fDP"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="s9F-qn-aiC"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="yMF-0K-B04" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="192.75362318840581" y="211.60714285714286"/>
+            <point key="canvasLocation" x="1760.8695652173915" y="-1227.4553571428571"/>
         </scene>
         <!--Login-->
         <scene sceneID="nBh-gk-1ne">
             <objects>
-                <viewController storyboardIdentifier="Login" title="Login" id="OEZ-pA-Gda" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Login" title="Login" useStoryboardIdentifierAsRestorationIdentifier="YES" id="OEZ-pA-Gda" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="WT1-9r-C5F">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pe8-NS-KzZ">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <connections>
                                     <segue destination="dXA-Eh-cEQ" kind="embed" identifier="loadLogin" destinationCreationSelector="loadLogin:" id="M4n-b7-sxl"/>
                                 </connections>
@@ -95,10 +131,10 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="ivo-S6-LT7" firstAttribute="trailing" secondItem="Pe8-NS-KzZ" secondAttribute="trailing" id="OXl-2L-zBy"/>
-                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="top" secondItem="ivo-S6-LT7" secondAttribute="top" id="hPF-TE-VXB"/>
-                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="leading" secondItem="ivo-S6-LT7" secondAttribute="leading" id="k73-3U-fL5"/>
-                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="bottom" secondItem="ivo-S6-LT7" secondAttribute="bottom" id="uxN-7H-UOj"/>
+                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="trailing" secondItem="ivo-S6-LT7" secondAttribute="trailing" id="9Au-j6-dtR"/>
+                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="top" secondItem="WT1-9r-C5F" secondAttribute="top" id="GjQ-sP-oXW"/>
+                            <constraint firstAttribute="bottom" secondItem="Pe8-NS-KzZ" secondAttribute="bottom" id="JsB-7E-9hi"/>
+                            <constraint firstItem="Pe8-NS-KzZ" firstAttribute="leading" secondItem="ivo-S6-LT7" secondAttribute="leading" id="ssu-Le-qqO"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ivo-S6-LT7"/>
                     </view>
@@ -106,7 +142,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AES-ZM-7av" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="200.00000000000003" y="936.83035714285711"/>
+            <point key="canvasLocation" x="185.50724637681162" y="162.72321428571428"/>
         </scene>
         <!--Hosting Controller-->
         <scene sceneID="sLp-96-fcG">
@@ -114,17 +150,7 @@
                 <hostingController id="dXA-Eh-cEQ" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bwc-E9-3LB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="188" y="1615"/>
-        </scene>
-        <!--Hosting Controller-->
-        <scene sceneID="sY0-IJ-evO">
-            <objects>
-                <hostingController id="e50-ab-icO" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Dgf-Rx-3Jl"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="yU2-z8-bdO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="970" y="212"/>
+            <point key="canvasLocation" x="184" y="866"/>
         </scene>
     </scenes>
 </document>

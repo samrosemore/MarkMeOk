@@ -10,8 +10,10 @@ target 'ArtUOKV3' do
    pod 'Firebase/Firestore'
    pod 'Firebase/Core'
    pod 'FirebaseUI'
-    pod 'Firebase/Messaging'
-
+   pod 'Firebase/Messaging'
+   pod "SideMenu"
+   pod 'GoogleSignIn'
+   
   target 'ArtUOKV3Tests' do
     inherit! :search_paths
     # Pods for testing

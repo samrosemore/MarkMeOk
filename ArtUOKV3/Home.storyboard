@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bfs-bX-c4n">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bfs-bX-c4n">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -12,11 +12,11 @@
             <objects>
                 <viewController storyboardIdentifier="HomeActivity" title="HomeActivity" useStoryboardIdentifierAsRestorationIdentifier="YES" id="jNa-ck-D57" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1IJ-4H-9ej">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jYw-eT-Rlw">
-                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
                                 <connections>
                                     <segue destination="2Ix-I8-IXd" kind="embed" destinationCreationSelector="loadHomeScreen:" id="JS2-W5-lqB"/>
                                 </connections>
@@ -31,7 +31,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="t2B-Cf-KPh"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Home" image="icons8-home-30" id="uRU-t8-Z3Q"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="house.fill" catalog="system" id="uRU-t8-Z3Q"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXs-rk-kMG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -42,11 +42,11 @@
             <objects>
                 <viewController storyboardIdentifier="UpdateSettings" title="UpdateSettings" id="2FQ-FV-lFd" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BF6-9m-qgB">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lY1-2R-pJo">
-                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
                                 <connections>
                                     <segue destination="dui-CR-Pna" kind="embed" destinationCreationSelector="updateSettings:" id="e17-hS-WV8"/>
                                 </connections>
@@ -72,11 +72,11 @@
             <objects>
                 <viewController title="UpdateEmergencyContacts" id="DJf-Ye-rrF" customClass="RevViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cVY-7N-QS8">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8tm-YJ-M6f">
-                                <rect key="frame" x="0.0" y="44" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
                                 <connections>
                                     <segue destination="7Kz-a0-HDC" kind="embed" destinationCreationSelector="updateEmergencyContacts:" id="7L3-JU-mHf"/>
                                 </connections>
@@ -91,7 +91,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="BGb-BH-GiI"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Emergency Contacts" image="icons8-contacts-30" id="yDI-ed-WHC"/>
+                    <tabBarItem key="tabBarItem" title="Emergency Contacts" image="person.crop.circle" catalog="system" id="yDI-ed-WHC"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xM3-0w-hHH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -131,8 +131,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Apz-CO-2XV">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            <containerView opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Apz-CO-2XV">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <connections>
                                     <segue destination="XYA-Bq-MYx" kind="embed" id="Dso-gE-mFN"/>
                                 </connections>
@@ -140,17 +140,17 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="Apz-CO-2XV" firstAttribute="top" secondItem="ndf-Yr-xTZ" secondAttribute="top" id="6n8-8p-B0h"/>
-                            <constraint firstItem="ndf-Yr-xTZ" firstAttribute="trailing" secondItem="Apz-CO-2XV" secondAttribute="trailing" id="Nva-re-NnD"/>
-                            <constraint firstItem="ndf-Yr-xTZ" firstAttribute="bottom" secondItem="Apz-CO-2XV" secondAttribute="bottom" id="eBX-nh-MuR"/>
-                            <constraint firstItem="Apz-CO-2XV" firstAttribute="leading" secondItem="ndf-Yr-xTZ" secondAttribute="leading" id="sno-Fk-usO"/>
+                            <constraint firstItem="Apz-CO-2XV" firstAttribute="leading" secondItem="ndf-Yr-xTZ" secondAttribute="leading" id="3OK-85-kgc"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="Apz-CO-2XV" secondAttribute="bottom" id="FuF-t2-dqL"/>
+                            <constraint firstItem="Apz-CO-2XV" firstAttribute="top" secondItem="37G-Fd-sxI" secondAttribute="topMargin" id="SKP-4t-WSQ"/>
+                            <constraint firstItem="Apz-CO-2XV" firstAttribute="trailing" secondItem="ndf-Yr-xTZ" secondAttribute="trailing" id="uW1-9q-moY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ndf-Yr-xTZ"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P03-7S-krb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1475" y="-220"/>
+            <point key="canvasLocation" x="-1475.3623188405797" y="-220.3125"/>
         </scene>
         <!--HomeScreen-->
         <scene sceneID="HfS-Ai-178">
@@ -173,8 +173,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="icons8-contacts-30" width="30" height="30"/>
-        <image name="icons8-home-30" width="30" height="30"/>
-        <image name="icons8-settings-30" width="30" height="30"/>
+        <image name="house.fill" catalog="system" width="128" height="106"/>
+        <image name="icons8-settings-30" width="24" height="24"/>
+        <image name="person.crop.circle" catalog="system" width="128" height="121"/>
     </resources>
 </document>

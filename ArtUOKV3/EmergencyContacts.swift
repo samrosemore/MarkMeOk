@@ -13,7 +13,7 @@ struct EmergencyContacts: View
 {
     
     @ObservedObject var userStorage = UserStorage()
-    @ObservedObject var error = Error()
+    @ObservedObject var error = CustomError()
     
     
 
@@ -75,7 +75,7 @@ struct EmergencyContacts: View
                                        {
                                            checkedInOn in
                                            
-                                           Text(checkedInOn)
+                                        Text(checkedInOn).foregroundColor(Color.black)
                                        }
                                }.frame(height:100)
                     }
@@ -91,11 +91,11 @@ struct EmergencyContacts: View
                         Text("Pending Users")
                               List()
                                   {
-                                      ForEach(userStorage.pendingUsers, id: \.self)
+                                      ForEach(userStorage.altListDisplay2, id: \.self)
                                       {
                                           pendingUser in
                                           
-                                          Text(pendingUser)
+                                        Text(pendingUser).foregroundColor(Color.black)
                                       }
                               }.frame(height:100)
                     }

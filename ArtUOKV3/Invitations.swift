@@ -17,15 +17,16 @@ struct Invitations: View
     @State var showAlert:Bool = false
     @State var success:Bool = false
     
+    var customPopUp:CustomPopUpError = CustomPopUpError(title: "", msg:  "", justMsg: true)
+    
     var vc:RevViewController?
     
     init()
        {
-                 
-        UITableView.appearance().backgroundColor = UIColor.init(named: "Logo Color")
-        UITableViewCell.appearance().backgroundColor = UIColor.init(named: "Logo Color")
-        UITableView.appearance().tableFooterView = UIView()
-        UITableView.appearance().separatorColor = .black
+            UITableView.appearance().backgroundColor = UIColor.init(named: "Logo Color")
+            UITableViewCell.appearance().backgroundColor = UIColor.init(named: "Logo Color")
+            UITableView.appearance().tableFooterView = UIView()
+            UITableView.appearance().separatorColor = .black
         }
     
     
@@ -38,85 +39,135 @@ struct Invitations: View
                 ForEach(userStorage.listDispaly, id: \.self)
                 {invitation in
                     
-                    HStack {
-                        Text(invitation)
-                        Spacer()
-                    }.contentShape(Rectangle()).onTapGesture
+                    
+                HStack
                     {
-                        self.showAlert = true
-                    }.alert(isPresented: self.$showAlert)
-                    {
-                        Alert(title: Text("\(self.userStorage.invitationsToHosts[invitation]!) group"), message: Text("Are you sure you want to join this group?"),
-                              primaryButton: Alert.Button.default(Text("Yes"), action:
-                                {
-                                    let index = self.userStorage.listDispaly.firstIndex(of: invitation)
-                                    let groupId = self.userStorage.groupIDs[index!]
-                                    //update group profile
-                                    let db = Firestore.firestore()
-                                    
-                                    db.collection("Groups").document(groupId).getDocument(completion: {
-                                        (snapshot, error) in
+                        HStack {
+                            Text(invitation)
+                            Spacer()
+                              
+                        }.contentShape(Rectangle()).onTapGesture
+                        {
+                            self.customPopUp.title = self.userStorage.invitationsToHosts[invitation] ?? ""
+                            self.customPopUp.msg = "Are you sure you want to join this group?"
+                            self.customPopUp.justMsg = false
+                            self.showAlert = true
+                            
+                        }.alert(isPresented: self.$showAlert)
+                        {
+                            if(!self.customPopUp.justMsg)
+                            {
+                                return Alert(title: Text(self.customPopUp.title), message: Text(self.customPopUp.msg),
+                                  primaryButton: Alert.Button.default(Text("Yes"), action:
+                                    {
+                                        let index = self.userStorage.listDispaly.firstIndex(of: invitation)
+                                        let groupId = self.userStorage.groupIDs[index!]
+                                        //update group profile
+                                        let db = Firestore.firestore()
                                         
-                                        if let err = error
-                                        {
-                                            debugPrint("error fetching data\(err)")
-                                        }
-                                        else
-                                        {
-                                            let data = snapshot!.data()
+                                        db.collection("Groups").document(groupId).getDocument(completion: {
+                                            (snapshot, error) in
                                             
-                                            
-                                            var pendingUsers:[String] = Utilities.unstringify(value: data!["pendingUsers"] as! String)
-                                            
-                                            let pendingIndex = pendingUsers.firstIndex(of: Auth.auth().currentUser!.uid)
-                                            
-                                            pendingUsers.remove(at: pendingIndex!)
-                                            
-                                            var currentUsers = Utilities.unstringify(value: data!["users"] as! String)
-                                            currentUsers.append(Auth.auth().currentUser!.uid)
-                                            
-                                            let dataToAdd = ["pendingUsers":Utilities.restringify(array: pendingUsers), "users": Utilities.restringify(array: currentUsers)]
-                                            
-                                            db.collection("Groups").document(groupId).updateData(dataToAdd) { err in
-                                                if let err = err {
-                                                    print("Error writing document: \(err)")
-                                                } else {
-                                                    //update user profile
-                                                    self.updateUserProfile(id:
-                                                        groupId)
+                                            if let err = error
+                                            {
+                                                debugPrint("error fetching data\(err)")
+                                            }
+                                            else
+                                            {
+                                                if((snapshot?.exists) != nil)
+                                                {
+                                                    let data = snapshot!.data()
+                                                    
+                                                    if(data?["pendingUsers"] != nil)
+                                                    {
+                                                        var pendingUsers:[String] =  (data!["pendingUsers"] as! [String])
+                                                        
+                                                        let pendingIndex = pendingUsers.firstIndex(of: Auth.auth().currentUser!.uid)
+                                                        
+                                                        pendingUsers.remove(at: pendingIndex!)
+                                                        
+                                                        var currentUsers = (data!["users"] as! [String])
+                                                        currentUsers.append(Auth.auth().currentUser!.uid)
+                                                        
+                                                        let dataToAdd:[String : Any] = ["pendingUsers": pendingUsers, "users":  currentUsers, "startTimer": true]
+                                                        
+                                                        db.collection("Groups").document(groupId).updateData(dataToAdd) { err in
+                                                            if let err = err {
+                                                                print("Error writing document: \(err)")
+                                                            } else {
+                                                                //update user profile
+                                                                self.updateUserProfile(id:
+                                                                    groupId)
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        //delete it from local storage
+                                                        let index = self.userStorage.listDispaly.firstIndex(of: invitation)
+                                                        self.userStorage.listDispaly.remove(at: index!)
+                                                         self.userStorage.groupIDs.remove(at: index!)
+                                                        
+                                                        //delete it from firebase
+                                                        self.deleteInvitation(groupId: groupId, dontUpdateGroup: true)
+                                                        self.customPopUp.title = "Group Data Deleted By Host"
+                                                        self.customPopUp.msg = "You will not see this paticular group invitation again"
+                                                        self.customPopUp.justMsg = true
+                                                        self.showAlert = true
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //delete it from local storage
+                                                    let index = self.userStorage.listDispaly.firstIndex(of: invitation)
+                                                    self.userStorage.listDispaly.remove(at: index!)
+                                                     self.userStorage.groupIDs.remove(at: index!)
+                                                    
+                                                    //delete it from firebase
+                                                    self.deleteInvitation(groupId: groupId, dontUpdateGroup: true)
+                                                    self.customPopUp.title = "Group Data Deleted By Host"
+                                                    self.customPopUp.msg = "You will not see this paticular group invitation again"
+                                                    self.customPopUp.justMsg = true
+                                                    self.showAlert = true
                                                 }
                                             }
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                        }
-                                         
+                                             
+                                        })
+                                        
+                                    }),
+                                  
+                                    secondaryButton: Alert.Button.cancel(Text("No"), action:
+                                    {
+                                        //ignore
                                     })
-                                    
-                                }),
-                              
-                                secondaryButton: Alert.Button.cancel(Text("No"), action:
-                                {
-                                    //ignore
-                                })
-                            )
+                                )
+                            }
+                            else
+                            {
+                                return Alert(title: Text(self.customPopUp.title), message: Text(self.customPopUp.msg), dismissButton: Alert.Button.cancel(Text("Ok")))
+                            }
+                            
+                        }
+                        Button(action:
+                        {
+                            let index = self.userStorage.listDispaly.firstIndex(of: invitation)
+                            let groupId = self.userStorage.groupIDs[index!]
+                            self.userStorage.listDispaly.remove(at: index!)
+                            self.userStorage.groupIDs.remove(at: index!)
+                            self.deleteInvitation(groupId: groupId, dontUpdateGroup: false)
+                            
+                        })
+                        {
+                            Image("Delete")
+                        }
                     }
+                    
                 }
             }.navigationBarTitle(Text("Invitations"))
             
         }
         
-    }
+    } 
     mutating func setVC(vc:RevViewController)
     {
         self.vc = vc
@@ -134,9 +185,18 @@ struct Invitations: View
             {
                 let data = snapshot!.data()
                 
-                var pastGroups:[String] = Utilities.unstringify(value: data!["Groups"] as! String)
-                pastGroups.append(id)
-                let dataToAdd = ["Groups" : Utilities.restringify(array: pastGroups)]
+                var pastGroups:[String]?
+                if(data!["Groups"] == nil)
+                {
+                    pastGroups = [String]()
+                }
+                else
+                {
+                    pastGroups = (data!["Groups"] as! [String])
+                }
+            
+                pastGroups!.append(id)
+                let dataToAdd = ["Groups" : pastGroups!]
                 
                 db.collection("users").document(Auth.auth().currentUser!.uid).updateData(dataToAdd)
                     { err in
@@ -147,7 +207,10 @@ struct Invitations: View
                         else
                         {
                             let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
-                            let vc = storyboard.instantiateViewController(withIdentifier: "GroupsScreen")
+                            let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                            
+                            vc.isModalInPresentation = true
+                            vc.modalPresentationStyle = .fullScreen
                             
                             self.vc!.present(vc, animated: true, completion: nil)
                         }
@@ -166,6 +229,48 @@ struct Invitations: View
     func getData() -> (UserStorage)
     {
         return userStorage
+    }
+    func deleteInvitation(groupId: String, dontUpdateGroup: Bool)
+    {
+        
+        let db = Firestore.firestore()
+        let docRef = db.collection("users").document(Auth.auth().currentUser!.uid).collection("invitation").document(groupId)
+        docRef.delete()
+        
+        if(!dontUpdateGroup)
+        {
+            db.collection("Groups").document(groupId).getDocument(completion:
+            {
+                (snapshot, error) in
+                
+                if let err = error
+                {
+                    debugPrint("error fetching data\(err)")
+                }
+                else
+                {
+                    let data = snapshot!.data()
+                    
+                    if(data != nil && data!["pendingUsers"] != nil)
+                    {
+                        var pendingUsers:[String] =  (data!["pendingUsers"] as! [String])
+                        
+                        let pendingIndex = pendingUsers.firstIndex(of: Auth.auth().currentUser!.uid)
+                        
+                        pendingUsers.remove(at: pendingIndex!)
+                        
+                        
+                        
+                        let dataToAdd:[String : Any] = ["pendingUsers": pendingUsers]
+                        
+                        db.collection("Groups").document(groupId).updateData(dataToAdd)
+                    }
+                    
+                     
+                }
+                 
+            })
+        }
     }
 }
 

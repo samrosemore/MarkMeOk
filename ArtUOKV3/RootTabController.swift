@@ -30,6 +30,8 @@ class RootTabController:UIViewController
           let rvc:RevViewController = RevViewController(coder: coder)!
           rvc.transferData = DataChannel()
           rvc.transferData!.groupName = self.groupName
+        
+          userStorage.preset = true
           rvc.userStorage = userStorage
       
           return rvc

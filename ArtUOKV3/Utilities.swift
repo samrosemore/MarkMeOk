@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import FirebaseFirestore
+import FirebaseAuth
 
 class Utilities
 {
@@ -20,11 +21,12 @@ class Utilities
         
     }
 
-    class func showError(error: String, observedObject: Error)
+    class func showError(error: String, observedObject: CustomError)
     {
         observedObject.message = error
     }
 
+    //returns true if valid email
     class func validateEmail(testStr: String) -> Bool
     {
         let emailRegEx = "^(?:(?:(?:(?: )*(?:(?:(?:\\t| )*\\r\\n)?(?:\\t| )+))+(?: )*)|(?: )+)?(?:(?:(?:[-A-Za-z0-9!#$%&’*+/=?^_'{|}~]+(?:\\.[-A-Za-z0-9!#$%&’*+/=?^_'{|}~]+)*)|(?:\"(?:(?:(?:(?: )*(?:(?:[!#-Z^-~]|\\[|\\])|(?:\\\\(?:\\t|[ -~]))))+(?: )*)|(?: )+)\"))(?:@)(?:(?:(?:[A-Za-z0-9](?:[-A-Za-z0-9]{0,61}[A-Za-z0-9])?)(?:\\.[A-Za-z0-9](?:[-A-Za-z0-9]{0,61}[A-Za-z0-9])?)*)|(?:\\[(?:(?:(?:(?:(?:[0-9]|(?:[1-9][0-9])|(?:1[0-9][0-9])|(?:2[0-4][0-9])|(?:25[0-5]))\\.){3}(?:[0-9]|(?:[1-9][0-9])|(?:1[0-9][0-9])|(?:2[0-4][0-9])|(?:25[0-5]))))|(?:(?:(?: )*[!-Z^-~])*(?: )*)|(?:[Vv][0-9A-Fa-f]+\\.[-A-Za-z0-9._~!$&'()*+,;=:]+))\\])))(?:(?:(?:(?: )*(?:(?:(?:\\t| )*\\r\\n)?(?:\\t| )+))+(?: )*)|(?: )+)?$"
@@ -93,30 +95,22 @@ class Utilities
            return true
         }
     }
-    class func unstringify(value:String) -> [String]
+    class func emailIsAlreadyPresent(list:[User], u: User) -> (Bool)
     {
-        var array = value.components(separatedBy: ",")
-        
-        let vowels: Set<Character> = [","]
-        //remove commas from the string
-        for var string in array
+        for user in list
         {
-            string.removeAll(where: {vowels.contains($0)})
-            
+            if(user.ID == u.ID)
+            {
+                return true
+            }
         }
-        array = array.filter({ $0 != ""})
         
-        return array
+        return false
     }
-    class func restringify(array:[String]) -> String
-    {
-        var result:String = ""
-        for string in array
-        {
-            result += (string + ",")
-        }
-        return result
-    }
+    
+    
+    
+    
     
     
 
