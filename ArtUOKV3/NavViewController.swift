@@ -24,6 +24,11 @@ class NavViewController:UIViewController
         menu?.setNavigationBarHidden(true, animated: false)
         
         
+        
+        
+        
+        
+        
         SideMenuManager.default.leftMenuNavigationController = menu
         SideMenuManager.default.addPanGestureToPresent(toView: self.view)
         

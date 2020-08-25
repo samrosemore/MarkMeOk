@@ -23,6 +23,8 @@ struct NewGroup: View
     
     @State var showAlert:Bool = false
     
+    @State var focus:[Bool] = [false, false]
+    
     
     
     var title:String?
@@ -48,14 +50,14 @@ struct NewGroup: View
             }
             
 
-            CustomTextField(text: $userStorage.newGroupName, hintText: "New Group",    option: CustomTextField.GENERIC).padding()
+            CustomTextField(text: $userStorage.newGroupName, hintText: "New Group",    option: CustomTextField.GENERIC, tag: 0, focus: $focus).padding()
             .frame(height: 40)
             .textFieldStyle(RoundedBorderTextFieldStyle())
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1)).padding(.leading, 15).padding(.trailing, 60)
             
             HStack
             {
-                CustomTextField(text: $userStorage.email, hintText: "Email",  option: CustomTextField.USERNAME).padding().frame(width: 150).frame(height: 40)
+                CustomTextField(text: $userStorage.email, hintText: "Email",  option: CustomTextField.USERNAME, tag: 1, focus: $focus).padding().frame(width: 150).frame(height: 40)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
                 

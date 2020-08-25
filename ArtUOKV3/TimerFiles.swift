@@ -49,7 +49,7 @@ class TimerFiles
                         self.userStorage.hoursLeft = "00"
                         self.userStorage.minLeft = "00"
                         self.userStorage.expiredFlag = true
-                        print(self.userStorage.endDate)
+                        
                     }
                     else if(currentTime >= warningTime)
                     {

@@ -6,6 +6,11 @@ import FirebaseFirestore
 import FirebaseInstanceID
 import MessageUI
 import GoogleSignIn
+import CryptoKit
+import AuthenticationServices
+
+
+
 
 
 
@@ -13,8 +18,11 @@ import GoogleSignIn
 
 class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
 {
-    var signUp: SignUp?
     
+    
+    var signUp: SignUp?
+    // Unhashed nonce.
+    fileprivate var currentNonce: String?
     var setSettings: Settings?
     
     var setEmergencyContact: EmergencyContacts?
@@ -521,7 +529,7 @@ class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
                                      let date = NSDate(timeIntervalSince1970: expireTime)
                                      let formatter = DateFormatter()
                                      formatter.timeZone = TimeZone.current
-                                     formatter.dateFormat = "HH:mm dd-MM-yyyy"
+                                     formatter.dateFormat = "hh:mm a dd-MM-yyyy"
                                      storage.endDate = formatter.string(from: date as Date)
                                  }
                                 
@@ -623,14 +631,14 @@ class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
        
         
         
-        print("this is the email: " + newGroup!.userStorage.email)
+        print("this is the email: " + email)
         
         let swiftLink:String =  "https://itunes.apple.com/us/app/urbanspoon/id1521328421"
         let androidLink:String = "https://play.google.com/store/apps/details?id=com.ncourage.markmeok"
         
         let subject = "You are invited to join the MarkMeOK community"
         
-        let msg = "<p>Join the MarkMeOK Community! Tap the Link Below to Download the App <br> <a href=\(swiftLink)> For IOS version></a> <br>  <a href=\(androidLink)>For Playstore Version></a></p>"
+        let msg = "<p>Join the MarkMeOK Community! Tap the Link Below to Download the App <br> <a href=\(swiftLink)> For IOS version</a> <br>  <a href=\(androidLink)>For Playstore Version></a></p>"
 
         if !MFMailComposeViewController.canSendMail()
         {
@@ -646,7 +654,7 @@ class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
         mailer.setMessageBody(msg, isHTML: true)
         self.present(mailer, animated: true, completion:
         {
-            self.newGroup?.userStorage.email = ""
+            
         })
                     
              
@@ -676,6 +684,67 @@ class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
     {
         GIDSignIn.sharedInstance()?.presentingViewController = self
         GIDSignIn.sharedInstance().signIn()
+    }
+    // Adapted from https://auth0.com/docs/api-auth/tutorials/nonce#generate-a-cryptographically-random-nonce
+    
+    @available(iOS 13, *)
+    func startSignInWithAppleFlow()
+    {
+      let nonce = randomNonceString()
+      currentNonce = nonce
+      let appleIDProvider = ASAuthorizationAppleIDProvider()
+      let request = appleIDProvider.createRequest()
+      request.requestedScopes = [.fullName, .email]
+      request.nonce = sha256(nonce)
+
+      let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+      authorizationController.delegate = self
+      authorizationController.presentationContextProvider = self
+      authorizationController.performRequests()
+    }
+
+    @available(iOS 13, *)
+    private func sha256(_ input: String) -> String
+    {
+      let inputData = Data(input.utf8)
+      let hashedData = SHA256.hash(data: inputData)
+      let hashString = hashedData.compactMap {
+        return String(format: "%02x", $0)
+      }.joined()
+
+      return hashString
+    }
+    
+    private func randomNonceString(length: Int = 32) -> String {
+      precondition(length > 0)
+      let charset: Array<Character> =
+          Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+      var result = ""
+      var remainingLength = length
+
+      while remainingLength > 0 {
+        let randoms: [UInt8] = (0 ..< 16).map { _ in
+          var random: UInt8 = 0
+          let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+          if errorCode != errSecSuccess {
+            fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+          }
+          return random
+        }
+
+        randoms.forEach { random in
+          if remainingLength == 0 {
+            return
+          }
+
+          if random < charset.count {
+            result.append(charset[Int(random)])
+            remainingLength -= 1
+          }
+        }
+      }
+
+      return result
     }
     
     
@@ -973,4 +1042,88 @@ class RevViewController: UIViewController, MFMailComposeViewControllerDelegate
     }
     
 
+}
+
+@available(iOS 13.0, *)
+extension RevViewController: ASAuthorizationControllerDelegate
+{
+
+  func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+    if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+      guard let nonce = currentNonce else {
+        fatalError("Invalid state: A login callback was received, but no login request was sent.")
+      }
+      guard let appleIDToken = appleIDCredential.identityToken else {
+        print("Unable to fetch identity token")
+        return
+      }
+      guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+        print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
+        return
+      }
+      // Initialize a Firebase credential.
+      let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                idToken: idTokenString,
+                                                rawNonce: nonce)
+      // Sign in with Firebase.
+      Auth.auth().signIn(with: credential) { (authResult, error) in
+        if (error != nil)
+        {
+          // Error. If error.code == .MissingOrInvalidNonce, make sure
+          // you're sending the SHA256-hashed nonce as a hex string with
+          // your request to Apple.
+            print(error?.localizedDescription)
+            return
+        }
+        else
+        {
+            if(authResult!.additionalUserInfo!.isNewUser)
+            {
+               //so new user
+               //store extra data
+                   let user = Auth.auth().currentUser!
+                   let email = user.email
+                   let name = user.displayName
+                   
+               
+                   let db = FirebaseFirestore.Firestore.firestore();
+                   
+                   //now store the extra user info
+               db.collection("users").document(Auth.auth().currentUser!.uid).setData(["fullName": name ?? "", "email": email ?? "", "Groups": [String](), "initialBootup": true])
+                       { err in
+                           if let err = err
+                           {
+                               print("Error writing document: \(err)")
+                               //if this fails this will cause a ton of errors
+                               //might want to just delete the users and send them back to the login screen
+                           }
+                            else
+                           {
+                                let storyboard = UIStoryboard(name: "GroupsListings", bundle: nil)
+                                let vc = storyboard.instantiateViewController(withIdentifier: "GroupBase1")
+                                vc.isModalInPresentation = true
+                                vc.modalPresentationStyle = .fullScreen
+                                self.present(vc, animated: true, completion: nil)
+                            }
+                       }
+            }
+        }
+        // User is signed in to Firebase with Apple.
+        // ...
+      }
+    }
+  }
+
+  func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+    // Handle error.
+    print("Sign in with Apple errored: \(error)")
+  }
+
+}
+
+extension RevViewController: ASAuthorizationControllerPresentationContextProviding {
+    /// - Tag: provide_presentation_anchor
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
 }

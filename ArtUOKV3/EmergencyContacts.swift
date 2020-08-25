@@ -18,7 +18,8 @@ struct EmergencyContacts: View
     
 
     //Solution is this method!
-    init(){
+    init()
+    {
         
         UITableView.appearance().backgroundColor = .clear
         UITableViewCell.appearance().backgroundColor = .clear

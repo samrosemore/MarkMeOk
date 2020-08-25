@@ -21,6 +21,7 @@ struct SignUp: View
     
     @ObservedObject var error = CustomError()
     var vc: RevViewController?
+    @State var focus:[Bool] = [false, false, false]
     
     
     var body: some View {
@@ -37,21 +38,21 @@ struct SignUp: View
                 Spacer().frame(width: 30)
                 VStack(alignment: .center, spacing: 30)
                 {
-                    CustomTextField(text: $userStorage.fullName, hintText: "Full Name", option: CustomTextField.GENERIC)
+                    CustomTextField(text: $userStorage.fullName, hintText: "Full Name", option: CustomTextField.GENERIC, tag: 0, focus: $focus)
                     .padding()
                     
                     .frame(height: 40)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
                     
-                    CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME).padding()
+                    CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME, tag: 1, focus: $focus).padding()
                     .frame(height: 40)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
                     
                     
                     
-                    CustomTextField(text: $userStorage.password, hintText: "Password", option: CustomTextField.NEW_PASSWORD).padding()
+                    CustomTextField(text: $userStorage.password, hintText: "Password", option: CustomTextField.NEW_PASSWORD, tag: 2, focus: $focus).padding()
                     
                     .frame(height: 40)
                     .textFieldStyle(RoundedBorderTextFieldStyle())

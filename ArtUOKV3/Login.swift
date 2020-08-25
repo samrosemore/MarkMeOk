@@ -13,7 +13,8 @@ import FirebaseAuth
 import FirebaseInstanceID
 import FirebaseFirestore
 import GoogleSignIn
-
+import AuthenticationServices
+ 
 struct Login: View
 {
     @State private var username: String = ""
@@ -21,6 +22,9 @@ struct Login: View
     
     @ObservedObject var userStorage = UserStorage()
     @ObservedObject var error = CustomError()
+    
+    @State var focus:[Bool] = [false, false]
+    
     var vc: RevViewController?
     
     var body: some View {
@@ -37,15 +41,15 @@ struct Login: View
                     
                     VStack(alignment: .center, spacing: 30)
                     {
-                        CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME).padding()
+                        CustomTextField(text: $userStorage.email, hintText: "Email", option: CustomTextField.USERNAME, tag: 0, focus: $focus).padding()
                         .frame(height: 40)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
-                        CustomTextField(text: $userStorage.password, hintText: "Password", option: CustomTextField.PASSWORD)
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1)).tag(0)
+                        CustomTextField(text: $userStorage.password, hintText:    "Password", option: CustomTextField.PASSWORD, tag: 1, focus: $focus)
                         .padding()
                         .frame(height: 40)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.init("Grayish"), lineWidth: 1)).tag(1)
                     }
                     
                     
@@ -106,6 +110,10 @@ struct Login: View
                     
                 }.padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height:50).background(Color.white)
                 
+            }
+            SignInWithApple().padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: 50)).frame(width: 200).frame(height:50).onTapGesture
+            {
+                self.vc!.startSignInWithAppleFlow()
             }
             
             
@@ -227,6 +235,24 @@ struct Login: View
     
     
     
+}
+
+// 1
+final class SignInWithApple: UIViewRepresentable {
+    
+    
+  // 2
+  func makeUIView(context: Context) -> ASAuthorizationAppleIDButton
+  {
+    // 3
+    return ASAuthorizationAppleIDButton()
+  }
+  
+  // 4
+  func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context)
+  {
+    
+  }
 }
 
 struct Login_Previews: PreviewProvider {

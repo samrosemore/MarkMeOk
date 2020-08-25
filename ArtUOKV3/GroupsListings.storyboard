@@ -341,12 +341,12 @@
         <!--GroupsBase-->
         <scene sceneID="7BY-rC-OYs">
             <objects>
-                <viewController storyboardIdentifier="GroupsBase" title="GroupsBase" useStoryboardIdentifierAsRestorationIdentifier="YES" id="JJe-oO-hTo" customClass="NavViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GroupsBase" title="GroupsBase" wantsFullScreenLayout="YES" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="JJe-oO-hTo" customClass="NavViewController" customModule="ArtUOKV3" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="FOi-du-4EY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LP4-w6-Z3Z">
+                            <containerView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="LP4-w6-Z3Z">
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
                                 <connections>
                                     <segue destination="BBh-LO-LKZ" kind="embed" id="KiO-x6-ZYS"/>
@@ -369,6 +369,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <value key="contentSizeForViewInPopover" type="size" width="414" height="896"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uye-JZ-xwD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -396,7 +397,7 @@
         <!--GroupBase1-->
         <scene sceneID="XWE-VJ-aGl">
             <objects>
-                <navigationController storyboardIdentifier="GroupBase1" title="GroupBase1" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qrR-9Z-lh4" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="GroupBase1" autoresizesArchivedViewToFullSize="NO" title="GroupBase1" wantsFullScreenLayout="YES" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="qrR-9Z-lh4" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Rjg-J2-lpq">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>

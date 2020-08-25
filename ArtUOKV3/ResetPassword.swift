@@ -15,6 +15,8 @@ struct ResetPassword: View
     @ObservedObject var error:CustomError = CustomError()
     var vc:RevViewController?
     
+    @State var focus: [Bool] = [false]
+    
     var body: some View
     {
         VStack(alignment: .center, spacing: 20)
@@ -22,7 +24,7 @@ struct ResetPassword: View
             Spacer()
             Text("Reset Your Password").font(.system(size: 24))
             Spacer().frame(height:20)
-            CustomTextField(text: $email, hintText: "Email", option: CustomTextField.USERNAME).frame(height: 60)
+            CustomTextField(text: $email, hintText: "Email", option: CustomTextField.USERNAME, tag: 0, focus: $focus).frame(height: 60)
             .foregroundColor(.black)
             .background(Color.init("Whiteish"))
             .cornerRadius(4.0)

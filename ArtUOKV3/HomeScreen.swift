@@ -35,11 +35,15 @@ struct HomeScreen: View
                     
                     if(!self.userStorage.startTimer)
                     {
-                        Text("Timer Will Start When More Than One User Joins")
-                            .multilineTextAlignment(.center)
+                        Text("__:__")
                            .font(.system(size: 18))
                            .foregroundColor(Color.black)
                            .padding(40).background(Circle().fill(Color.init("Grayish")).frame(width: 160))
+                        Spacer().frame(height:30)
+                        Text("Timer Will Start When More Than One User Joins The Group").font(.system(size: 16))
+                        .foregroundColor(Color.black)
+                            .multilineTextAlignment(.center)
+                        
                     }
                         
                     else if(self.userStorage.expiredFlag)

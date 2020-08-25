@@ -16,25 +16,37 @@ struct CustomTextField: UIViewRepresentable
     class Coordinator: NSObject, UITextFieldDelegate
     {
         
-        @Binding var text: String
         
-        var hintText :String
-        var option:Int
+        
+        var parent:CustomTextField
+        
+        
         
 
-        init(hintText: String, text: Binding<String>, option:Int)
+        init(textfield: CustomTextField)
         {
-            _text = text
-            self.option = option
-            self.hintText = hintText
+            self.parent = textfield
         }
 
         func textFieldDidChangeSelection(_ textField: UITextField) {
-            text = textField.text ?? ""
+            parent.text = textField.text ?? ""
         }
         func textFieldDidBeginEditing(_ textField: UITextField)
         {
-            if(textField.text == hintText)
+            
+            for b in 0...(parent.focus.count - 1)
+            {
+                if(b == parent.tag)
+                {
+                    parent.focus[b] = true
+                }
+                else
+                {
+                    parent.focus[b] = false
+                }
+            }
+            
+            if(textField.text == parent.hintText)
             {
                textField.text = ""
             }
@@ -42,21 +54,45 @@ struct CustomTextField: UIViewRepresentable
         func textFieldDidEndEditing(_ textField: UITextField) {
             if(textField.text == "")
             {
-                textField.text = hintText
+                textField.text = parent.hintText
             }
         }
         func textFieldShouldReturn(_ textField: UITextField) -> Bool
         {
-            let nextTag = textField.tag + 1
-
-            if let nextResponder = textField.superview?.viewWithTag(nextTag)
+            //want to do this but not sure how many textfield to account for (could be 2 or 3)
+            /*
+             if parent.tag == 0 {
+                 parent.isfocusAble = [false, true]
+                 parent.text = textField.text ?? ""
+             } else if parent.tag == 1 {
+                 parent.isfocusAble = [false, false]
+                 parent.text = textField.text ?? ""
+             */
+            let nextTag = parent.tag + 1
+            if(nextTag < parent.focus.count)
             {
-                nextResponder.becomeFirstResponder()
+                for b in 0...(parent.focus.count - 1)
+                {
+                    if(b == nextTag)
+                    {
+                        parent.focus[b] = true
+                    }
+                    else
+                    {
+                        parent.focus[b] = false
+                    }
+                }
             }
             else
             {
-                textField.resignFirstResponder()
+                for b in 0...(parent.focus.count - 1)
+                {
+                  
+                    parent.focus[b] = false
+
+                }
             }
+            
             return true
         }
         
@@ -66,19 +102,28 @@ struct CustomTextField: UIViewRepresentable
     
     var hintText:String
     var option:Int
+    var tag:Int
+    @Binding var focus:[Bool]
+    
+    
     
     static var GENERIC = 0
     static var NEW_PASSWORD = 1
     static var PASSWORD = 2
     static var USERNAME = 3
     
+ 
+    
     
 
-    func makeUIView(context: UIViewRepresentableContext<CustomTextField>) -> UITextField {
+    func makeUIView(context: UIViewRepresentableContext<CustomTextField>) ->  UITextField {
         let textField = UITextField(frame: .zero)
         textField.textColor = .black
         textField.text = hintText
         textField.delegate = context.coordinator
+        
+        textField.tag = tag
+        
         
         if(option == CustomTextField.NEW_PASSWORD)
         {
@@ -99,16 +144,25 @@ struct CustomTextField: UIViewRepresentable
     }
 
     func makeCoordinator() -> CustomTextField.Coordinator {
-        return Coordinator(hintText: hintText, text: $text, option: option)
+        return Coordinator(textfield: self)
     }
 
-    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<CustomTextField>) {
-        
-        /*
-        if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<CustomTextField>)
+    {
+        if focus[tag]
+        {
             uiView.becomeFirstResponder()
-            context.coordinator.didBecomeFirstResponder = true
+        } else {
+            uiView.resignFirstResponder()
         }
-        */
+        
+
+        /*
+        if  context.coordinator.isFirstResponder
+        {
+            uiView.becomeFirstResponder()
+        }
+ */
+        
     }
 }
